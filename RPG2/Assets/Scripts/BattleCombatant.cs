@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 public abstract class BattleCombatant : MonoBehaviour {
+	public string Name { get; protected set; }
 	public Stat Health { get; protected set; }
 	public int Strength { get; protected set; }
 	public List<Ability> Abilities { get; private set; }
@@ -26,6 +27,8 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 	public virtual void Update() {
 	}
+
+	public abstract void UseAbility(Ability ability, BattleCombatant target);
 
 	public void Damage(int value) {
 		Health.Current -= value;

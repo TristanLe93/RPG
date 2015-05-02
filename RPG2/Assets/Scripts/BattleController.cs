@@ -23,8 +23,6 @@ public class BattleController : MonoBehaviour {
 	}
 
 	void Update () {
-		//Debug.Log(GetCurrentCombatant().isAnimating());
-		//UpdateDebugText();
 	}
 
 	public void StartBattle() {
@@ -48,7 +46,7 @@ public class BattleController : MonoBehaviour {
 	private void BeginEnemyTurn() {
 		EnemyCombatant enemy = (EnemyCombatant)GetCurrentCombatant();
 		enemy.BattleAI(this, Players);
-		UseAbilityOnTarget();
+		StartCoroutine(WaitForAnimation(enemy));
 	}
 
 	/// <summary>
@@ -70,26 +68,23 @@ public class BattleController : MonoBehaviour {
 		}
 	}
 
-	private void UseAbilityOnTarget() {
-		BattleCombatant currentCombatant = GetCurrentCombatant();
-		StartCoroutine(WaitForAnimation(currentCombatant));
-	}
-	
-	private IEnumerator WaitForAnimation(BattleCombatant currentCombatant) {
-		currentCombatant.PlayAttackAnim();
+
+	private IEnumerator WaitForAnimation(BattleCombatant combatant) {
+		combatant.PlayAttackAnim();
 		
 		// wait for USER animations
 		do {
 			yield return null;
-		} while (currentCombatant.isAnimating());
-		
-		currentCombatant.UseAbility(selectedAbility, selectedTarget);
+		} while (combatant.isAnimating());
 
+		combatant.UseAbility(selectedAbility, selectedTarget);
+		
 		// wait for TARGET animations
 		do {
 			yield return null;
 		} while (selectedTarget.isAnimating());
 
+		// animation complete!
 		EndTurn();
 	}
 
@@ -111,6 +106,7 @@ public class BattleController : MonoBehaviour {
 	}
 	
 	private void EnemyVictory() {
+		Debug.Log("GAMEOVER - YOU LOSE");
 		//TODO: YOU LOSE
 	}
 
@@ -127,6 +123,6 @@ public class BattleController : MonoBehaviour {
 		selectedAbility = currentCombatant.Abilities[0];
 		selectedTarget = Enemies[0];
 
-		UseAbilityOnTarget();
+		StartCoroutine(WaitForAnimation(currentCombatant));
 	}
 }
