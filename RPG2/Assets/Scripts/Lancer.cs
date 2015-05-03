@@ -15,7 +15,13 @@ public class Lancer : PlayerCombatant {
 	}
 
 	public override void UseAbility(Ability ability, BattleCombatant target) {
-		int damage = Strength + ability.Power;
-		target.Damage(damage);
+		if (ability.Type == AbilityType.Attack) {
+			int damage = Strength + ability.Power;
+			target.Damage(damage);
+		}
+		else if (ability.Type == AbilityType.Heal) {
+			int healing = ability.Power;
+			target.Heal(healing);
+		}
 	}
 }

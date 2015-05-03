@@ -1,8 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\BattleController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\AbilityType.cs">
     <Files>
-      <File FileName="Assets\Scripts\BattleController.cs" Line="24" Column="2" />
+      <File FileName="Assets\Scripts\AbilityType.cs" Line="4" Column="6" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

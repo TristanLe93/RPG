@@ -15,4 +15,9 @@ public class ObjectUI : MonoBehaviour {
 		DamageText.text = value;
 		DamageTextAnim.Play("DamageShow");
 	}
+
+	public void ShowHealValue(string value) {
+		DamageText.text = value;
+		DamageTextAnim.Play("HealShow");
+	}
 }

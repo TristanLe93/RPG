@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Ability.cs" />
+     <Compile Include="Assets\Scripts\AbilityType.cs" />
      <Compile Include="Assets\Scripts\BattleCombatant.cs" />
      <Compile Include="Assets\Scripts\BattleController.cs" />
      <Compile Include="Assets\Scripts\BattleUIController.cs" />

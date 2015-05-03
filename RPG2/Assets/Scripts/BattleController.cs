@@ -46,6 +46,7 @@ public class BattleController : MonoBehaviour {
 	private void BeginEnemyTurn() {
 		EnemyCombatant enemy = (EnemyCombatant)GetCurrentCombatant();
 		enemy.BattleAI(this, Players);
+		enemy.PlayAttackAnim();
 		StartCoroutine(WaitForAnimation(enemy));
 	}
 
@@ -70,8 +71,6 @@ public class BattleController : MonoBehaviour {
 
 
 	private IEnumerator WaitForAnimation(BattleCombatant combatant) {
-		combatant.PlayAttackAnim();
-		
 		// wait for USER animations
 		do {
 			yield return null;
@@ -123,6 +122,16 @@ public class BattleController : MonoBehaviour {
 		selectedAbility = currentCombatant.Abilities[0];
 		selectedTarget = Enemies[0];
 
+		currentCombatant.PlayAttackAnim();
+		StartCoroutine(WaitForAnimation(currentCombatant));
+	}
+
+	public void PlayerHeal() {
+		PlayerCombatant currentCombatant = (PlayerCombatant)GetCurrentCombatant();
+		selectedAbility = currentCombatant.Abilities[1];
+		selectedTarget = Players[0];
+		
+		currentCombatant.PlayUseItemAnim();
 		StartCoroutine(WaitForAnimation(currentCombatant));
 	}
 }
