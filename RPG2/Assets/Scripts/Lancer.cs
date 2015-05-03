@@ -19,6 +19,10 @@ public class Lancer : PlayerCombatant {
 			int damage = Strength + ability.Power;
 			target.Damage(damage);
 		}
+		else if (ability.Type == AbilityType.Magic) {
+			int damage = ability.Power;
+			target.Damage(damage);
+		}
 		else if (ability.Type == AbilityType.Heal) {
 			int healing = ability.Power;
 			target.Heal(healing);

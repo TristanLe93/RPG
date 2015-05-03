@@ -131,7 +131,16 @@ public class BattleController : MonoBehaviour {
 		selectedAbility = currentCombatant.Abilities[1];
 		selectedTarget = Players[0];
 		
-		currentCombatant.PlayUseItemAnim();
+		currentCombatant.PlayItemAnim();
+		StartCoroutine(WaitForAnimation(currentCombatant));
+	}
+
+	public void PlayerMagic() {
+		PlayerCombatant currentCombatant = (PlayerCombatant)GetCurrentCombatant();
+		selectedAbility = currentCombatant.Abilities[2];
+		selectedTarget = Enemies[0];
+
+		currentCombatant.PlayMagicAnim();
 		StartCoroutine(WaitForAnimation(currentCombatant));
 	}
 }

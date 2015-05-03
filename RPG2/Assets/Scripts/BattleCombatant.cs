@@ -27,9 +27,15 @@ public abstract class BattleCombatant : MonoBehaviour {
 		heal.Type = AbilityType.Heal;
 		heal.Power = 20;
 
+		Ability magic = new Ability();
+		magic.Name = "Magic";
+		magic.Type = AbilityType.Magic;
+		magic.Power = 10;
+
 		Abilities = new List<Ability>();
 		Abilities.Add(attack);
 		Abilities.Add(heal);
+		Abilities.Add(magic);
 	}
 
 	public virtual void Update() {
@@ -68,11 +74,19 @@ public abstract class BattleCombatant : MonoBehaviour {
 	}
 
 	public void PlayAttackAnim() {
-		anim.SetTrigger("playAttack");
+		int rng = Random.Range(0, 2);
+		if (rng == 0)
+			anim.SetTrigger("playAttack");
+		else
+			anim.SetTrigger("playAttack2");
 	}
 
-	public void PlayUseItemAnim() {
-		anim.SetTrigger("playUseItem");
+	public void PlayMagicAnim() {
+		anim.SetTrigger("playMagic");
+	}
+
+	public void PlayItemAnim() {
+		anim.SetTrigger("playItem");
 	}
 
 	public void PlayVictoryAnim() {
