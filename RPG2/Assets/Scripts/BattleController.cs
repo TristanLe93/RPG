@@ -9,6 +9,9 @@ public class BattleController : MonoBehaviour {
 	public List<BattleCombatant> Players;
 	public List<BattleCombatant> Enemies;
 
+	public BattleUIController UIController;
+	private PlayerCombatant lastPlayerCombatant;
+
 	// target select
 	private BattleCombatant selectedTarget;
 	private Ability selectedAbility;
@@ -36,8 +39,13 @@ public class BattleController : MonoBehaviour {
 	private void SetupNextTurn() {
 		currentTurn = turnList[0];
 
+		// update CombatUI with current combatant info
 		if (currentTurn < Players.Count) {
-			// enable UI
+			lastPlayerCombatant = (PlayerCombatant)GetCurrentCombatant();
+
+			UIController.UpdateUI(lastPlayerCombatant.Name, lastPlayerCombatant.Abilities);
+			UIController.UpdateHealthBar(lastPlayerCombatant.Health);
+			UIController.EnableUI();
 		} else {
 			BeginEnemyTurn();
 		}
@@ -71,12 +79,15 @@ public class BattleController : MonoBehaviour {
 
 
 	private IEnumerator WaitForAnimation(BattleCombatant combatant) {
+		UIController.DisableUI();
+
 		// wait for USER animations
 		do {
 			yield return null;
 		} while (combatant.isAnimating());
 
 		combatant.UseAbility(selectedAbility, selectedTarget);
+		UIController.UpdateHealthBar(lastPlayerCombatant.Health);
 		
 		// wait for TARGET animations
 		do {

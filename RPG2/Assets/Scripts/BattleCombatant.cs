@@ -8,6 +8,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public List<Ability> Abilities { get; private set; }
 	public bool isDead = false;
 
+	public BattleController BattleController { private get; set; }
 	private Animator anim;
 	private ObjectUI objectUI;
 
@@ -36,6 +37,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		Abilities.Add(attack);
 		Abilities.Add(heal);
 		Abilities.Add(magic);
+		Abilities.Add(attack);
 	}
 
 	public virtual void Update() {
