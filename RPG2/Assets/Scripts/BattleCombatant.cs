@@ -90,6 +90,14 @@ public abstract class BattleCombatant : MonoBehaviour {
 		anim.SetTrigger("playItem");
 	}
 
+	public void ShowTarget() {
+		objectUI.ShowTargetArrow();
+	}
+
+	public void HideTarget() {
+		objectUI.HideTargetArrow();
+	}
+
 	public void PlayVictoryAnim() {
 		anim.SetBool("isVictory", true);
 	}

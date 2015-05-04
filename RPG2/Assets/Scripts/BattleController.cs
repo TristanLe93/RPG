@@ -52,8 +52,13 @@ public class BattleController : MonoBehaviour {
 				hit.collider.gameObject.GetComponent<BattleCombatant>();
 
 			selectedTarget = target;
+			battleState = BattleState.EnemyTurn;
+
+			HideTargets();
+			UIController.DisableButtons();
 			lastPlayerCombatant.PlayAttackAnim();
 			StartCoroutine(WaitForAnimation(lastPlayerCombatant));
+
 		}
 	}
 	
@@ -70,6 +75,7 @@ public class BattleController : MonoBehaviour {
 		currentTurn = turnList[0];
 		selectedAbility = null;
 		selectedTarget = null;
+		UIController.ResetButtons();
 
 		// update CombatUI with current combatant info
 		if (currentTurn < Players.Count) {
@@ -78,7 +84,7 @@ public class BattleController : MonoBehaviour {
 
 			UIController.UpdateUI(lastPlayerCombatant.Name, lastPlayerCombatant.Abilities);
 			UIController.UpdateHealthBar(lastPlayerCombatant.Health);
-			UIController.EnableUI();
+			UIController.EnableButtons();
 		} else {
 			BeginEnemyTurn();
 		}
@@ -109,12 +115,8 @@ public class BattleController : MonoBehaviour {
 			SetupNextTurn(); 
 		}
 	}
-
-
+	
 	private IEnumerator WaitForAnimation(BattleCombatant combatant) {
-		UIController.DisableUI();
-		battleState = BattleState.EnemyTurn;
-
 		// wait for USER animations
 		do {
 			yield return null;
@@ -139,6 +141,24 @@ public class BattleController : MonoBehaviour {
 		return Enemies[currentTurn - Players.Count];
 	}
 
+	private void ShowTargets() {
+		foreach (BattleCombatant c in Enemies) {
+			c.ShowTarget();
+		}
+		foreach (BattleCombatant c in Players) {
+			c.ShowTarget();
+		}
+	}
+
+	private void HideTargets() {
+		foreach (BattleCombatant c in Enemies) {
+			c.HideTarget();
+		}
+		foreach (BattleCombatant c in Players) {
+			c.HideTarget();
+		}
+	}
+
 	private bool IsPartyDead(List<BattleCombatant> party) {
 		return party.Find((BattleCombatant c) => c.isDead == false) == null;
 	}
@@ -155,35 +175,13 @@ public class BattleController : MonoBehaviour {
 	}
 
 	
-	public void SetAbility(int index) {
-		selectedAbility = lastPlayerCombatant.Abilities[index];
-	}
-
-
-	public void PlayerAttack() {
-		PlayerCombatant currentCombatant = (PlayerCombatant)GetCurrentCombatant();
-		selectedAbility = currentCombatant.Abilities[0];
-		selectedTarget = Enemies[0];
-
-		currentCombatant.PlayAttackAnim();
-		StartCoroutine(WaitForAnimation(currentCombatant));
-	}
-
-	public void PlayerHeal() {
-		PlayerCombatant currentCombatant = (PlayerCombatant)GetCurrentCombatant();
-		selectedAbility = currentCombatant.Abilities[1];
-		selectedTarget = Players[0];
-		
-		currentCombatant.PlayItemAnim();
-		StartCoroutine(WaitForAnimation(currentCombatant));
-	}
-
-	public void PlayerMagic() {
-		PlayerCombatant currentCombatant = (PlayerCombatant)GetCurrentCombatant();
-		selectedAbility = currentCombatant.Abilities[2];
-		selectedTarget = Enemies[0];
-
-		currentCombatant.PlayMagicAnim();
-		StartCoroutine(WaitForAnimation(currentCombatant));
+	public void Btn_SetAbility(int index) {
+		if (UIController.IsAButtonSelected()) {
+			selectedAbility = lastPlayerCombatant.Abilities[index];
+			ShowTargets();
+		} else {
+			selectedAbility = null;
+			HideTargets();
+		}
 	}
 }

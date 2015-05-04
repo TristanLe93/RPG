@@ -3,12 +3,12 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class BattleUIController : MonoBehaviour {
-	public Button BtnAbility1;
-	public Button BtnAbility2;
-	public Button BtnAbility3;
-	public Button BtnAbility4;
-	public Button BtnAbility5;
-	
+	public Toggle BtnAbility1;
+	public Toggle BtnAbility2;
+	public Toggle BtnAbility3;
+	public Toggle BtnAbility4;
+	public Toggle BtnAbility5;
+
 	public Text Ability1;
 	public Text Ability2;
 	public Text Ability3;
@@ -23,7 +23,7 @@ public class BattleUIController : MonoBehaviour {
 
 
 	void Start() {
-		DisableUI();
+		DisableButtons();
 	}
 
 	public void UpdateUI(string characterName, List<Ability> abilities) {
@@ -40,7 +40,7 @@ public class BattleUIController : MonoBehaviour {
 		HealthBar.fillAmount = health.GetRatio();
 	}
 
-	public void DisableUI() {
+	public void DisableButtons() {
 		BtnAbility1.interactable = false;
 		BtnAbility2.interactable = false;
 		BtnAbility3.interactable = false;
@@ -48,11 +48,28 @@ public class BattleUIController : MonoBehaviour {
 		BtnAbility5.interactable = false;
 	}
 
-	public void EnableUI() {
+	public void EnableButtons() {
 		BtnAbility1.interactable = true;
 		BtnAbility2.interactable = true;
 		BtnAbility3.interactable = true;
 		BtnAbility4.interactable = true;
 		BtnAbility5.interactable = true;
+	}
+
+	public void ResetButtons() {
+		BtnAbility1.isOn = false;
+		BtnAbility2.isOn = false;
+		BtnAbility3.isOn = false;
+		BtnAbility4.isOn = false;
+		BtnAbility5.isOn = false;
+	}
+
+	/// <summary>
+	/// Return true if there is at least one button selected
+	/// </summary>
+	public bool IsAButtonSelected() {
+		return BtnAbility1.isOn || BtnAbility2.isOn ||
+				BtnAbility3.isOn || BtnAbility4.isOn ||
+				BtnAbility5.isOn;
 	}
 }
