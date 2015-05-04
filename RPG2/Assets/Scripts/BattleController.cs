@@ -56,7 +56,7 @@ public class BattleController : MonoBehaviour {
 
 			HideTargets();
 			UIController.DisableButtons();
-			lastPlayerCombatant.PlayAttackAnim();
+			PlayAbilityAnimation(lastPlayerCombatant);
 			StartCoroutine(WaitForAnimation(lastPlayerCombatant));
 
 		}
@@ -93,7 +93,7 @@ public class BattleController : MonoBehaviour {
 	private void BeginEnemyTurn() {
 		EnemyCombatant enemy = (EnemyCombatant)GetCurrentCombatant();
 		enemy.BattleAI(this, Players);
-		enemy.PlayAttackAnim();
+		PlayAbilityAnimation(enemy);
 		StartCoroutine(WaitForAnimation(enemy));
 	}
 
@@ -172,6 +172,15 @@ public class BattleController : MonoBehaviour {
 	private void EnemyVictory() {
 		Debug.Log("GAMEOVER - YOU LOSE");
 		//TODO: YOU LOSE
+	}
+
+	private void PlayAbilityAnimation(BattleCombatant c) {
+		if (selectedAbility.Type == AbilityType.Attack)
+			c.PlayAttackAnim();
+		else if (selectedAbility.Type == AbilityType.Magic)
+			c.PlayMagicAnim();
+		else if (selectedAbility.Type == AbilityType.Heal) 
+			c.PlayItemAnim();
 	}
 
 	
