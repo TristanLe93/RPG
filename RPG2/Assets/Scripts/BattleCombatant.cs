@@ -7,8 +7,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public int Strength { get; protected set; }
 	public List<Ability> Abilities { get; private set; }
 	public bool isDead = false;
-
-	public BattleController BattleController { private get; set; }
+	
 	private Animator anim;
 	private ObjectUI objectUI;
 
@@ -42,7 +41,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 	public virtual void Update() {
 	}
-
+	
 	public abstract void UseAbility(Ability ability, BattleCombatant target);
 
 	public void Damage(int value) {

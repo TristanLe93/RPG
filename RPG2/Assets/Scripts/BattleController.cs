@@ -20,27 +20,60 @@ public class BattleController : MonoBehaviour {
 	private List<int> turnList;
 	private int currentTurn;
 
+	private BattleState battleState = BattleState.Start;
+
 
 	void Start () {
 		StartBattle();
 	}
 
 	void Update () {
+		if (Input.GetMouseButtonUp(0) && 
+		    selectedAbility != null &&
+		    battleState == BattleState.PlayerTurn) {
+			SetTarget();
+		}
 	}
 
+	public void SetAbility(Ability a) {
+		selectedAbility = a;
+	}
+	
+	public void SetTarget(BattleCombatant target) {
+		selectedTarget = target;
+	}
+
+	private void SetTarget() {
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit2D hit = Physics2D.Raycast(ray.origin, Vector2.zero);
+
+		if (hit.collider != null) {
+			BattleCombatant target = 
+				hit.collider.gameObject.GetComponent<BattleCombatant>();
+
+			selectedTarget = target;
+			lastPlayerCombatant.PlayAttackAnim();
+			StartCoroutine(WaitForAnimation(lastPlayerCombatant));
+		}
+	}
+	
 	public void StartBattle() {
+		// initialise the turn list
 		int totalCombatants = Players.Count + Enemies.Count;
 		turnList = Enumerable.Range(0, totalCombatants).ToList();
 
-		//disableUI
 		SetupNextTurn();
 	}
 
+	
 	private void SetupNextTurn() {
 		currentTurn = turnList[0];
+		selectedAbility = null;
+		selectedTarget = null;
 
 		// update CombatUI with current combatant info
 		if (currentTurn < Players.Count) {
+			battleState = BattleState.PlayerTurn;
 			lastPlayerCombatant = (PlayerCombatant)GetCurrentCombatant();
 
 			UIController.UpdateUI(lastPlayerCombatant.Name, lastPlayerCombatant.Abilities);
@@ -80,6 +113,7 @@ public class BattleController : MonoBehaviour {
 
 	private IEnumerator WaitForAnimation(BattleCombatant combatant) {
 		UIController.DisableUI();
+		battleState = BattleState.EnemyTurn;
 
 		// wait for USER animations
 		do {
@@ -120,13 +154,11 @@ public class BattleController : MonoBehaviour {
 		//TODO: YOU LOSE
 	}
 
-	public void SetAbility(Ability a) {
-		selectedAbility = a;
+	
+	public void SetAbility(int index) {
+		selectedAbility = lastPlayerCombatant.Abilities[index];
 	}
 
-	public void SetTarget(BattleCombatant target) {
-		selectedTarget = target;
-	}
 
 	public void PlayerAttack() {
 		PlayerCombatant currentCombatant = (PlayerCombatant)GetCurrentCombatant();

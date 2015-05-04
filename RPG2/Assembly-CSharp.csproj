@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\AbilityType.cs" />
      <Compile Include="Assets\Scripts\BattleCombatant.cs" />
      <Compile Include="Assets\Scripts\BattleController.cs" />
+     <Compile Include="Assets\Scripts\BattleState.cs" />
      <Compile Include="Assets\Scripts\BattleUIController.cs" />
      <Compile Include="Assets\Scripts\EnemyCombatant.cs" />
      <Compile Include="Assets\Scripts\EnemyLancer.cs" />
