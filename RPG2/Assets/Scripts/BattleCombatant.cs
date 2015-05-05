@@ -6,15 +6,16 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public Stat Health { get; protected set; }
 	public int Strength { get; protected set; }
 	public List<Ability> Abilities { get; private set; }
+
 	public bool isDead = false;
-	
+
+	public ObjectUI ObjectUI { get; private set; }
 	private Animator anim;
-	private ObjectUI objectUI;
 
-
+	
 	public virtual void Start() {
 		anim = GetComponent<Animator>();
-		objectUI = GetComponent<ObjectUI>();
+		ObjectUI = GetComponent<ObjectUI>();
 
 		// set up attack
 		Ability attack = new Ability();
@@ -46,8 +47,8 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 	public void Damage(int value) {
 		Health.Current -= value;
-		objectUI.SetHealthFillAmount(Health.GetRatio());
-		objectUI.ShowDamageValue(value.ToString());
+		ObjectUI.SetHealthFillAmount(Health.GetRatio());
+		ObjectUI.ShowDamageValue(value.ToString());
 		PlayStruckAnim();
 
 		if (Health.IsCurrentZero()) {
@@ -58,8 +59,8 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 	public void Heal(int value) {
 		Health.Current += value;
-		objectUI.SetHealthFillAmount(Health.GetRatio());
-		objectUI.ShowHealValue(value.ToString());
+		ObjectUI.SetHealthFillAmount(Health.GetRatio());
+		ObjectUI.ShowHealValue(value.ToString());
 		PlayHealAnim();
 	}
 
@@ -89,15 +90,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public void PlayItemAnim() {
 		anim.SetTrigger("playItem");
 	}
-
-	public void ShowTarget() {
-		objectUI.ShowTargetArrow();
-	}
-
-	public void HideTarget() {
-		objectUI.HideTargetArrow();
-	}
-
+	
 	public void PlayVictoryAnim() {
 		anim.SetBool("isVictory", true);
 	}

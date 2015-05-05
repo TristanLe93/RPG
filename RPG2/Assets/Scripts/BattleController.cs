@@ -58,7 +58,6 @@ public class BattleController : MonoBehaviour {
 			UIController.DisableButtons();
 			PlayAbilityAnimation(lastPlayerCombatant);
 			StartCoroutine(WaitForAnimation(lastPlayerCombatant));
-
 		}
 	}
 	
@@ -77,6 +76,8 @@ public class BattleController : MonoBehaviour {
 		selectedTarget = null;
 		UIController.ResetButtons();
 
+		GetCurrentCombatant().ObjectUI.ShowTurnIcon();
+
 		// update CombatUI with current combatant info
 		if (currentTurn < Players.Count) {
 			battleState = BattleState.PlayerTurn;
@@ -93,6 +94,12 @@ public class BattleController : MonoBehaviour {
 	private void BeginEnemyTurn() {
 		EnemyCombatant enemy = (EnemyCombatant)GetCurrentCombatant();
 		enemy.BattleAI(this, Players);
+		UIController.ShowAbilityName(selectedAbility.Name);
+		StartCoroutine(DoEnemyTurn(enemy));
+	}
+
+	private IEnumerator DoEnemyTurn(EnemyCombatant enemy) {
+		yield return new WaitForSeconds(1f);
 		PlayAbilityAnimation(enemy);
 		StartCoroutine(WaitForAnimation(enemy));
 	}
@@ -117,6 +124,8 @@ public class BattleController : MonoBehaviour {
 	}
 	
 	private IEnumerator WaitForAnimation(BattleCombatant combatant) {
+		combatant.ObjectUI.HideTurnIcon();
+
 		// wait for USER animations
 		do {
 			yield return null;
@@ -143,19 +152,19 @@ public class BattleController : MonoBehaviour {
 
 	private void ShowTargets() {
 		foreach (BattleCombatant c in Enemies) {
-			c.ShowTarget();
+			c.ObjectUI.ShowTargetArrow();
 		}
 		foreach (BattleCombatant c in Players) {
-			c.ShowTarget();
+			c.ObjectUI.ShowTargetArrow();
 		}
 	}
 
 	private void HideTargets() {
 		foreach (BattleCombatant c in Enemies) {
-			c.HideTarget();
+			c.ObjectUI.HideTargetArrow();
 		}
 		foreach (BattleCombatant c in Players) {
-			c.HideTarget();
+			c.ObjectUI.HideTargetArrow();
 		}
 	}
 

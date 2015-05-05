@@ -21,6 +21,8 @@ public class BattleUIController : MonoBehaviour {
 	public Text CharacterJob;
 	public Image CharacterFace;
 
+	public Animator AbilityNameAnim;
+	public Text AbilityNameText;
 
 	void Start() {
 		DisableButtons();
@@ -71,5 +73,10 @@ public class BattleUIController : MonoBehaviour {
 		return BtnAbility1.isOn || BtnAbility2.isOn ||
 				BtnAbility3.isOn || BtnAbility4.isOn ||
 				BtnAbility5.isOn;
+	}
+
+	public void ShowAbilityName(string abilityName) {
+		AbilityNameText.text = abilityName;
+		AbilityNameAnim.Play("AbilityNameShow");
 	}
 }
