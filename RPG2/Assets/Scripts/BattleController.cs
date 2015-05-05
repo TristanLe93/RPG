@@ -169,7 +169,7 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private bool IsPartyDead(List<BattleCombatant> party) {
-		return party.Find((BattleCombatant c) => c.isDead == false) == null;
+		return party.Find((BattleCombatant c) => c.IsDead == false) == null;
 	}
 
 	private void PlayerVictory() {

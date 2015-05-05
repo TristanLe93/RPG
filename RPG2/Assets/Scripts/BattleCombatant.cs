@@ -7,7 +7,8 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public int Strength { get; protected set; }
 	public List<Ability> Abilities { get; private set; }
 
-	public bool isDead = false;
+	public int AnimationLayerIndex = 0;
+	public bool IsDead = false;
 
 	public ObjectUI ObjectUI { get; private set; }
 	private Animator anim;
@@ -16,6 +17,8 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public virtual void Start() {
 		anim = GetComponent<Animator>();
 		ObjectUI = GetComponent<ObjectUI>();
+
+		anim.SetLayerWeight(AnimationLayerIndex, 1.0f);
 
 		// set up attack
 		Ability attack = new Ability();
@@ -52,7 +55,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		PlayStruckAnim();
 
 		if (Health.IsCurrentZero()) {
-			isDead = true;
+			IsDead = true;
 			anim.SetBool("isDead", true);
 		}
 	}
@@ -69,7 +72,8 @@ public abstract class BattleCombatant : MonoBehaviour {
 	/// (returns false for Idle states)
 	/// </summary>
 	public bool isAnimating() {
-		AnimatorStateInfo currentState = anim.GetCurrentAnimatorStateInfo(0);
+		AnimatorStateInfo currentState = 
+			anim.GetCurrentAnimatorStateInfo(AnimationLayerIndex);
 		return !currentState.IsName("Idle") && 
 				!currentState.IsName("Dead") && 
 				!currentState.IsName("Victory");
