@@ -46,18 +46,18 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Ability.cs" />
-     <Compile Include="Assets\Scripts\AbilityType.cs" />
-     <Compile Include="Assets\Scripts\BattleCombatant.cs" />
-     <Compile Include="Assets\Scripts\BattleController.cs" />
-     <Compile Include="Assets\Scripts\BattleState.cs" />
-     <Compile Include="Assets\Scripts\BattleUIController.cs" />
-     <Compile Include="Assets\Scripts\EnemyCombatant.cs" />
-     <Compile Include="Assets\Scripts\EnemyLancer.cs" />
-     <Compile Include="Assets\Scripts\Lancer.cs" />
-     <Compile Include="Assets\Scripts\ObjectUI.cs" />
-     <Compile Include="Assets\Scripts\PlayerCombatant.cs" />
-     <Compile Include="Assets\Scripts\Stat.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\Ability.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\AbilityType.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleCombatant.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleController.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleState.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleUIController.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\EnemyCombatant.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\EnemyLancer.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\Lancer.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\ObjectUI.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\PlayerCombatant.cs" />
+     <Compile Include="Assets\_Common\BattleSystem\Scripts\Stat.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -99,7 +99,7 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private IEnumerator DoEnemyTurn(EnemyCombatant enemy) {
-		yield return new WaitForSeconds(1f);
+		yield return new WaitForSeconds(1.5f);
 		PlayAbilityAnimation(enemy);
 		StartCoroutine(WaitForAnimation(enemy));
 	}
