@@ -47,18 +47,18 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\RPGEditor\AbilityEditor.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\Ability.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\AbilityType.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleCombatant.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleController.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleState.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleUIController.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\EnemyCombatant.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\EnemyLancer.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\Lancer.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\ObjectUI.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\PlayerCombatant.cs" />
-     <Compile Include="Assets\_Common\BattleSystem\Scripts\Stat.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\Ability.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\AbilityType.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleCombatant.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleController.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleState.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleUIController.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\EnemyCombatant.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\EnemyLancer.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\Lancer.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\ObjectUI.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\PlayerCombatant.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\Stat.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

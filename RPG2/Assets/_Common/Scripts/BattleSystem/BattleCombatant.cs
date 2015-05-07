@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public abstract class BattleCombatant : MonoBehaviour {
 	public string Name { get; protected set; }
@@ -11,48 +12,23 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public bool IsDead = false;
 
 	public ObjectUI ObjectUI { get; private set; }
-	private Animator anim;
+	protected Animator anim;
 
 	
 	public virtual void Start() {
-		anim = GetComponent<Animator>();
 		ObjectUI = GetComponent<ObjectUI>();
-
+		anim = GetComponent<Animator>();
 		anim.SetLayerWeight(AnimationLayerIndex, 1.0f);
-
-		// set up attack
-		/*Ability attack = new Ability();
-		attack.Name = "Attack";
-		attack.Type = AbilityType.Attack;
-		attack.Power = 5;
-
-		Ability heal = new Ability();
-		heal.Name = "Heal";
-		heal.Type = AbilityType.Heal;
-		heal.Power = 20;
-
-		Ability magic = new Ability();
-		magic.Name = "Magic";
-		magic.Type = AbilityType.Magic;
-		magic.Power = 10;
-
-		Abilities = new List<Ability>();
-		Abilities.Add(attack);
-		Abilities.Add(heal);
-		Abilities.Add(magic);
-		Abilities.Add(attack);*/
 	}
 
 	public virtual void Update() {
 	}
-	
-	public abstract void UseAbility(Ability ability, BattleCombatant target);
 
 	public void Damage(int value) {
 		Health.Current -= value;
 		ObjectUI.SetHealthFillAmount(Health.GetRatio());
 		ObjectUI.ShowDamageValue(value.ToString());
-		PlayStruckAnim();
+		anim.SetTrigger("playStruck");
 
 		if (Health.IsCurrentZero()) {
 			IsDead = true;
@@ -64,7 +40,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		Health.Current += value;
 		ObjectUI.SetHealthFillAmount(Health.GetRatio());
 		ObjectUI.ShowHealValue(value.ToString());
-		PlayHealAnim();
+		anim.SetTrigger("playHealing");
 	}
 
 	/// <summary>
@@ -93,17 +69,5 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 	public void PlayItemAnim() {
 		anim.SetTrigger("playItem");
-	}
-	
-	public void PlayVictoryAnim() {
-		anim.SetBool("isVictory", true);
-	}
-
-	private void PlayStruckAnim() {
-		anim.SetTrigger("playStruck");
-	}
-
-	private void PlayHealAnim() {
-		anim.SetTrigger("playHealing");
 	}
 }
