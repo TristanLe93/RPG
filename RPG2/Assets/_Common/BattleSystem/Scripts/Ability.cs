@@ -1,5 +1,7 @@
-﻿public class Ability {
-	public string Name { get; set; }
-	public AbilityType Type { get; set; }
-	public int Power { get; set; }
+﻿using UnityEngine;
+
+public class Ability : ScriptableObject {
+	public string Name;
+	public AbilityType Type;
+	public int Power;
 }

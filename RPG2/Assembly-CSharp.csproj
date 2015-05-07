@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\RPGEditor\AbilityEditor.cs" />
      <Compile Include="Assets\_Common\BattleSystem\Scripts\Ability.cs" />
      <Compile Include="Assets\_Common\BattleSystem\Scripts\AbilityType.cs" />
      <Compile Include="Assets\_Common\BattleSystem\Scripts\BattleCombatant.cs" />

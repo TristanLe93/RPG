@@ -71,28 +71,37 @@ public class BattleController : MonoBehaviour {
 
 	
 	private void SetupNextTurn() {
-		currentTurn = turnList[0];
+		// reset variables
 		selectedAbility = null;
 		selectedTarget = null;
 		UIController.ResetButtons();
 
-		GetCurrentCombatant().ObjectUI.ShowTurnIcon();
+		currentTurn = turnList[0];
+		BattleCombatant currentCombatant = GetCurrentCombatant();
+
+		// skip combatant's turn if dead
+		if (currentCombatant.IsDead) {
+			Debug.Log(currentCombatant.Name + "Dead");
+			EndTurn();
+			return;
+		}
+
+		currentCombatant.ObjectUI.ShowTurnIcon();
 
 		// update CombatUI with current combatant info
 		if (currentTurn < Players.Count) {
 			battleState = BattleState.PlayerTurn;
-			lastPlayerCombatant = (PlayerCombatant)GetCurrentCombatant();
+			lastPlayerCombatant = (PlayerCombatant)currentCombatant;
 
 			UIController.UpdateUI(lastPlayerCombatant.Name, lastPlayerCombatant.Abilities);
 			UIController.UpdateHealthBar(lastPlayerCombatant.Health);
 			UIController.EnableButtons();
 		} else {
-			BeginEnemyTurn();
+			BeginEnemyTurn((EnemyCombatant)currentCombatant);
 		}
 	}
 
-	private void BeginEnemyTurn() {
-		EnemyCombatant enemy = (EnemyCombatant)GetCurrentCombatant();
+	private void BeginEnemyTurn(EnemyCombatant enemy) {
 		enemy.BattleAI(this, Players);
 		UIController.ShowAbilityName(selectedAbility.Name);
 		StartCoroutine(DoEnemyTurn(enemy));

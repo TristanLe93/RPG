@@ -5,7 +5,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public string Name { get; protected set; }
 	public Stat Health { get; protected set; }
 	public int Strength { get; protected set; }
-	public List<Ability> Abilities { get; private set; }
+	public List<Ability> Abilities;
 
 	public int AnimationLayerIndex = 0;
 	public bool IsDead = false;
@@ -21,7 +21,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		anim.SetLayerWeight(AnimationLayerIndex, 1.0f);
 
 		// set up attack
-		Ability attack = new Ability();
+		/*Ability attack = new Ability();
 		attack.Name = "Attack";
 		attack.Type = AbilityType.Attack;
 		attack.Power = 5;
@@ -40,7 +40,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		Abilities.Add(attack);
 		Abilities.Add(heal);
 		Abilities.Add(magic);
-		Abilities.Add(attack);
+		Abilities.Add(attack);*/
 	}
 
 	public virtual void Update() {
