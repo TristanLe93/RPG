@@ -1,5 +1,6 @@
 ﻿public enum AbilityType {
-	Attack,
+	Melee,
 	Magic,
+	Ranged,
 	Heal
 }

@@ -20,22 +20,19 @@ public abstract class EnemyCombatant : BattleCombatant {
 
 		ui.ShowAbilityName(ability.Name);
 		yield return new WaitForSeconds(1.5f);
-		yield return StartCoroutine(UseAbility(ui, ability, target));
+		yield return StartCoroutine(UseAbility(ability, target));
 	}
 
-	protected virtual IEnumerator UseAbility(BattleUIController ui, Ability ability, BattleCombatant target) {
+	protected virtual IEnumerator UseAbility(Ability ability, BattleCombatant target) {
 		PlayAttackAnim();
-		
-		// wait for ability animation
+
 		do {
 			yield return null;
 		} while (isAnimating());
 		
 		int damage = Strength + ability.Power;
 		target.Damage(damage);
-		ui.UpdateHealthBar(target.Health);
-		
-		// wait for ability animation
+
 		do {
 			yield return null;
 		} while (target.isAnimating());

@@ -6,7 +6,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public string Name { get; protected set; }
 	public Stat Health { get; protected set; }
 	public int Strength { get; protected set; }
-	public List<Ability> Abilities;
+	public List<Ability> Abilities = new List<Ability>(4);
 
 	public int AnimationLayerIndex = 0;
 	public bool IsDead = false;
@@ -42,11 +42,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		ObjectUI.ShowHealValue(value.ToString());
 		anim.SetTrigger("playHealing");
 	}
-
-	/// <summary>
-	/// Returns true or false if the object is animating an action.
-	/// (returns false for Idle states)
-	/// </summary>
+	
 	public bool isAnimating() {
 		AnimatorStateInfo currentState = 
 			anim.GetCurrentAnimatorStateInfo(AnimationLayerIndex);
@@ -55,7 +51,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 				!currentState.IsName("Victory");
 	}
 
-	public void PlayAttackAnim() {
+	protected void PlayAttackAnim() {
 		int rng = Random.Range(0, 2);
 		if (rng == 0)
 			anim.SetTrigger("playAttack");
@@ -63,11 +59,11 @@ public abstract class BattleCombatant : MonoBehaviour {
 			anim.SetTrigger("playAttack2");
 	}
 
-	public void PlayMagicAnim() {
+	protected void PlayMagicAnim() {
 		anim.SetTrigger("playMagic");
 	}
 
-	public void PlayItemAnim() {
+	protected void PlayItemAnim() {
 		anim.SetTrigger("playItem");
 	}
 }

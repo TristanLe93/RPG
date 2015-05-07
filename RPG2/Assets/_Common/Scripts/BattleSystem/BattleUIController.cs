@@ -50,6 +50,16 @@ public class BattleUIController : MonoBehaviour {
 		BtnAbility5.interactable = false;
 	}
 
+	public void EnableButtons(List<Ability> abilities, int rank) {
+		if (abilities.Count < 4) return;
+
+		BtnAbility1.interactable = abilities[0].IsUsable(rank);
+		BtnAbility2.interactable = abilities[1].IsUsable(rank);
+		BtnAbility3.interactable = abilities[2].IsUsable(rank);
+		BtnAbility4.interactable = true;
+		//BtnAbility4.interactable = abilities[3].IsUsable(rank);
+	}
+
 	public void EnableButtons() {
 		BtnAbility1.interactable = true;
 		BtnAbility2.interactable = true;
