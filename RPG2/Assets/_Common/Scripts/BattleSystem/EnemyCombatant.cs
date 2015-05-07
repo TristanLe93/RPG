@@ -24,17 +24,51 @@ public abstract class EnemyCombatant : BattleCombatant {
 	}
 
 	protected virtual IEnumerator UseAbility(Ability ability, BattleCombatant target) {
-		PlayAttackAnim();
+		PlayAnimation(ability.Type);
 
 		do {
 			yield return null;
 		} while (isAnimating());
 		
-		int damage = Strength + ability.Power;
-		target.Damage(damage);
+		ExecuteAbility(ability, target);
 
 		do {
 			yield return null;
 		} while (target.isAnimating());
+	}
+
+	protected void PlayAnimation(AbilityType type) {
+		switch (type) {
+		case AbilityType.Melee: PlayAttackAnim(); break;
+		case AbilityType.Magic: PlayMagicAnim(); break;
+		case AbilityType.Heal: PlayItemAnim(); break;
+		case AbilityType.Ranged: PlayAttackAnim(); break;
+		}
+	}
+	
+	protected void ExecuteAbility(Ability ability, BattleCombatant target) {
+		int dmg = 0;
+		
+		switch (ability.Type) {
+		case AbilityType.Melee: 
+			dmg = ability.Power + Strength;
+			target.Damage(dmg);
+			break;
+			
+		case AbilityType.Magic: 
+			dmg = ability.Power;
+			target.Damage(dmg);
+			break;
+			
+		case AbilityType.Heal: 
+			dmg = ability.Power;
+			target.Heal(dmg);
+			break;
+			
+		case AbilityType.Ranged: 
+			dmg = ability.Power + Strength;
+			target.Damage(dmg);
+			break;
+		}
 	}
 }

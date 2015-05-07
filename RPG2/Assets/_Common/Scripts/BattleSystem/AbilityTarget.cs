@@ -1,4 +1,5 @@
 ﻿public enum AbilityTarget {
 	Players,
-	Enemies
+	Enemies, 
+	Self
 }

@@ -31,7 +31,10 @@ public class AbilityEditor : EditorWindow {
 
 		GUILayout.Space(5);
 
+
 		GUILayout.Label("Use and Target Ranks", EditorStyles.boldLabel);
+
+
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Useable Ranks (1-4)   )", EditorStyles.label);
 		useList[0] = EditorGUILayout.Toggle(useList[0]);
@@ -42,6 +45,7 @@ public class AbilityEditor : EditorWindow {
 
 		GUILayout.Space(5);
 
+		EditorGUI.BeginDisabledGroup(targets == AbilityTarget.Self);
 		GUILayout.BeginHorizontal();
 		GUILayout.Label("Targetable Ranks (1-4)", EditorStyles.label);
 		targetList[0] = EditorGUILayout.Toggle(targetList[0]);
@@ -49,6 +53,7 @@ public class AbilityEditor : EditorWindow {
 		targetList[2] = EditorGUILayout.Toggle(targetList[2]);
 		targetList[3] = EditorGUILayout.Toggle(targetList[3]);
 		GUILayout.EndHorizontal();
+		EditorGUI.EndDisabledGroup();
 
 		GUILayout.Space(20);
 
@@ -64,7 +69,12 @@ public class AbilityEditor : EditorWindow {
 		ability.TargetType = targets;
 		ability.Power = power;
 		ability.UseableRanks = useList;
-		ability.TargetableRanks = targetList;
+
+		if (targets == AbilityTarget.Self) {
+			ability.TargetableRanks = Enumerable.Repeat(true, 4).ToList();
+		} else {
+			ability.TargetableRanks = targetList;
+		}
 
 		AssetDatabase.CreateAsset(ability, "Assets/_Common/Abilities/" + abilityName + ".asset");
 		AssetDatabase.SaveAssets();
@@ -73,9 +83,5 @@ public class AbilityEditor : EditorWindow {
 		Selection.activeObject = ability;
 
 		Debug.Log("Ability '" + abilityName + "' created!");
-	}
-
-	private List<bool> CreateList<T>(params bool[] values) {
-		return new List<bool>(values);
 	}
 }

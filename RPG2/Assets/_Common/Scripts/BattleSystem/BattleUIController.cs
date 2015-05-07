@@ -1,13 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Linq;
 
 public class BattleUIController : MonoBehaviour {
-	public Toggle BtnAbility1;
-	public Toggle BtnAbility2;
-	public Toggle BtnAbility3;
-	public Toggle BtnAbility4;
-	public Toggle BtnAbility5;
+	public List<Toggle> Buttons = new List<Toggle>(5);
+	private List<string> abilityTooltips = new List<string>();
 
 	public Text Ability1;
 	public Text Ability2;
@@ -24,7 +22,14 @@ public class BattleUIController : MonoBehaviour {
 	public Animator AbilityNameAnim;
 	public Text AbilityNameText;
 
+	public GameObject Tooltip;
+	public Text TooltipText;
+
+
+
+
 	void Start() {
+		Tooltip.transform.position = new Vector3(10000, 10000, 0);
 		DisableButtons();
 	}
 
@@ -35,6 +40,13 @@ public class BattleUIController : MonoBehaviour {
 		Ability2.text = abilities[1].Name;
 		Ability3.text = abilities[2].Name;
 		Ability4.text = abilities[3].Name;
+
+		// update tooltips
+		abilityTooltips.Clear();
+
+		foreach (Ability a in abilities) {
+			abilityTooltips.Add(a.ToString());
+		}
 	}
 
 	public void UpdateHealthBar(Stat health) {
@@ -43,50 +55,51 @@ public class BattleUIController : MonoBehaviour {
 	}
 
 	public void DisableButtons() {
-		BtnAbility1.interactable = false;
-		BtnAbility2.interactable = false;
-		BtnAbility3.interactable = false;
-		BtnAbility4.interactable = false;
-		BtnAbility5.interactable = false;
+		foreach (Toggle t in Buttons) 
+			t.interactable = false;
 	}
 
 	public void EnableButtons(List<Ability> abilities, int rank) {
 		if (abilities.Count < 4) return;
 
-		BtnAbility1.interactable = abilities[0].IsUsable(rank);
-		BtnAbility2.interactable = abilities[1].IsUsable(rank);
-		BtnAbility3.interactable = abilities[2].IsUsable(rank);
-		BtnAbility4.interactable = true;
-		//BtnAbility4.interactable = abilities[3].IsUsable(rank);
-	}
+		for (int i = 0; i < abilities.Count; i++) {
+			Buttons[i].interactable = abilities[i].IsUsable(rank);
+        }
 
-	public void EnableButtons() {
-		BtnAbility1.interactable = true;
-		BtnAbility2.interactable = true;
-		BtnAbility3.interactable = true;
-		BtnAbility4.interactable = true;
-		BtnAbility5.interactable = true;
+		// TODO: ENABLE WHEN DONE BtnAbility5.interactable = true;
 	}
 
 	public void ResetButtons() {
-		BtnAbility1.isOn = false;
-		BtnAbility2.isOn = false;
-		BtnAbility3.isOn = false;
-		BtnAbility4.isOn = false;
-		BtnAbility5.isOn = false;
+		foreach (Toggle t in Buttons) 
+			t.isOn = false;
 	}
 
 	/// <summary>
 	/// Return true if there is at least one button selected
 	/// </summary>
 	public bool IsAButtonSelected() {
-		return BtnAbility1.isOn || BtnAbility2.isOn ||
-				BtnAbility3.isOn || BtnAbility4.isOn ||
-				BtnAbility5.isOn;
+		return Buttons.Find((Toggle t) => t.isOn);
 	}
 
 	public void ShowAbilityName(string abilityName) {
 		AbilityNameText.text = abilityName;
 		AbilityNameAnim.Play("AbilityNameShow");
+	}
+
+	public void ShowTooltip(int index) {
+		Toggle t = Buttons[index];
+		RectTransform rt = (RectTransform)Tooltip.transform;
+		float height = rt.sizeDelta.y;
+
+		Vector3 newPos = new Vector3(t.transform.position.x, 
+		                             t.transform.position.y + height, 
+		                             t.transform.position.z);
+
+		TooltipText.text = abilityTooltips[index];
+		Tooltip.transform.position = newPos;
+	}
+
+	public void HideTooltip() {
+		Tooltip.transform.position = new Vector3(10000, 10000, 0);
 	}
 }

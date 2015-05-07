@@ -168,6 +168,8 @@ public class BattleController : MonoBehaviour {
 			int rank = playerRanks.IndexOf(playerId);
 			
 			return selectedAbility.TargetableRanks[rank] && !target.IsDead;
+		} else if (selectedAbility.TargetType == AbilityTarget.Self)  {
+			return lastSelectedPlayer == target;
 		}
 
 		return false;
@@ -197,6 +199,10 @@ public class BattleController : MonoBehaviour {
 				if (IsTargetValid(Players[i]))
 					Players[i].ObjectUI.ShowTargetArrow();
 			}
+		} 
+		else {
+			// targeting self
+			lastSelectedPlayer.ObjectUI.ShowTargetArrow();
 		}
 	}
 	
@@ -224,6 +230,7 @@ public class BattleController : MonoBehaviour {
 	public void Btn_SetAbility(int index) {
 		if (UIController.IsAButtonSelected()) {
 			selectedAbility = GetCurrentCombatant().Abilities[index];
+			HideTargets();
 			ShowTargets();
 		} else {
 			selectedAbility = null;
