@@ -20,10 +20,10 @@ public abstract class EnemyCombatant : BattleCombatant {
 
 		ui.ShowAbilityName(ability.Name);
 		yield return new WaitForSeconds(1.5f);
-		yield return StartCoroutine(UseAbility(ability, target));
+		yield return StartCoroutine(UseAbility(ui, ability, target));
 	}
 
-	protected virtual IEnumerator UseAbility(Ability ability, BattleCombatant target) {
+	protected virtual IEnumerator UseAbility(BattleUIController ui, Ability ability, BattleCombatant target) {
 		PlayAnimation(ability.Type);
 
 		do {
@@ -31,6 +31,8 @@ public abstract class EnemyCombatant : BattleCombatant {
 		} while (isAnimating());
 		
 		ExecuteAbility(ability, target);
+		ui.UpdateUI(target.Name, target.Abilities);
+		ui.UpdateHealthBar(target.Health);
 
 		do {
 			yield return null;

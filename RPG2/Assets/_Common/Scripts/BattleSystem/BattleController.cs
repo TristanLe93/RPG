@@ -5,46 +5,66 @@ using System.Linq;
 
 public class BattleController : MonoBehaviour {
 	public BattleUIController UIController;
-	public List<BattleCombatant> Players = new List<BattleCombatant>(4);
-	public List<BattleCombatant> Enemies = new List<BattleCombatant>(4);
-	
+	public List<BattleCombatant> Players;
+	public List<BattleCombatant> Enemies;
+	public List<Transform> PlayerPos;
+	public List<Transform> EnemyPos;
+
 	private bool battleActive = true;
 
 	private Ability selectedAbility;
 	private BattleCombatant selectedTarget;
 	private BattleCombatant lastSelectedPlayer;
-	private List<BattleCombatant> targetList;
+	private List<BattleCombatant> targetList = new List<BattleCombatant>();
 
-	private List<int> playerRanks;
-	private List<int> enemyRanks;
-
-	private List<int> turnList;
-	private int currentTurn;
+	private List<BattleCombatant> turnList = new List<BattleCombatant>();
+	private List<BattleCombatant> playerRanks;
+	private List<BattleCombatant> enemyRanks;
+	
+	private BattleCombatant currentCombatant;
 	private Ability swap;
-
+	
 
 	private void Start () {
+		// automatically start a battle
+		StartCoroutine(UpdateState());
+	}
+
+	private IEnumerator UpdateState() {
+		InitialiseBattle();
+		
+		while (battleActive) {
+			UIController.ResetButtons();
+			currentCombatant = turnList[0];
+			selectedAbility = null;
+			selectedTarget = null;
+			
+			if (currentCombatant.IsDead) {
+				EndTurn();
+			} else if (currentCombatant is PlayerCombatant) {
+				yield return StartCoroutine(PlayerTurn());
+			} else {
+				yield return StartCoroutine(EnemyTurn());
+			}
+		}
+	}
+
+	private void InitialiseBattle() {
 		// initialise Swap ability
 		swap = ScriptableObject.CreateInstance<Ability>();
 		swap.TargetType = AbilityTarget.Players;
 		swap.UseableRanks = Enumerable.Repeat(true, 4).ToList();
 
-		targetList = new List<BattleCombatant>();
+		// setup players and enemies
+		playerRanks = Players;
+		enemyRanks = Enemies;
+		turnList.AddRange(Players);
+		turnList.AddRange(Enemies);
 
-		// automatically start a battle
-		StartCoroutine(UpdateState());
-	}
-
-	private void InitialiseBattle() {
-		int totalCombatants = Players.Count + Enemies.Count;
-
-		playerRanks = Enumerable.Range(0, Players.Count).ToList();
-		enemyRanks = Enumerable.Range(Players.Count, Enemies.Count + Players.Count).ToList();
-		turnList = Enumerable.Range(0, totalCombatants).ToList();
 
 		// shuffle turnList
 		for (int i = 0; i < turnList.Count; i++) {
-			int temp = turnList[i];
+			BattleCombatant temp = turnList[i];
 			int randomIndex = Random.Range(i, turnList.Count);
 			turnList[i] = turnList[randomIndex];
 			turnList[randomIndex] = temp;
@@ -56,30 +76,11 @@ public class BattleController : MonoBehaviour {
 		UIController.UpdateHealthBar(lastSelectedPlayer.Health);
 		UIController.DisableButtons();
 	}
-
-	private IEnumerator UpdateState() {
-		InitialiseBattle();
-
-		while (battleActive) {
-			UIController.ResetButtons();
-			currentTurn = turnList[0];
-			selectedAbility = null;
-			selectedTarget = null;
-
-			if (GetCurrentCombatant().IsDead) {
-				EndTurn();
-			} else if (currentTurn < Players.Count) {
-				yield return StartCoroutine(PlayerTurn());
-			} else {
-				yield return StartCoroutine(EnemyTurn());
-			}
-		}
-	}
-
+	
 	private IEnumerator PlayerTurn() {
-		PlayerCombatant player = (PlayerCombatant)GetCurrentCombatant();
+		PlayerCombatant player = (PlayerCombatant)currentCombatant;
 		lastSelectedPlayer = player;
-		int rank = playerRanks.IndexOf(currentTurn);
+		int rank = playerRanks.IndexOf(currentCombatant);
 
 		// Update Battle UI
 		player.ObjectUI.ShowTurnIcon();
@@ -91,7 +92,8 @@ public class BattleController : MonoBehaviour {
 		yield return StartCoroutine(SelectAbilityAndTarget());
 
 		if (selectedAbility == swap) {
-			yield return StartCoroutine(SwapRanks());
+			SwapRanks(player, selectedTarget);
+			yield return new WaitForSeconds(1.5f);
 		} 
 		else {
 			yield return StartCoroutine(player.UseAbility(selectedAbility, targetList));
@@ -101,7 +103,7 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private IEnumerator EnemyTurn() {
-		EnemyCombatant enemy = (EnemyCombatant)GetCurrentCombatant();
+		EnemyCombatant enemy = (EnemyCombatant)currentCombatant;
 		enemy.ObjectUI.ShowTurnIcon();
 		UIController.DisableButtons();
 
@@ -116,10 +118,6 @@ public class BattleController : MonoBehaviour {
 	/// Check if the either party is dead and award the winner.
 	/// </summary>
 	private void EndTurn() {
-		BattleCombatant b = GetCurrentCombatant();
-		b.ObjectUI.HideTurnIcon();
-		targetList.Clear();
-
 		// if a party is victorious, play victory/game over
 		if (IsPartyDead(Players)) {
 			battleActive = false;
@@ -130,7 +128,12 @@ public class BattleController : MonoBehaviour {
 			PlayerVictory();
 		} 
 		else {
-			turnList.Add(currentTurn);
+			currentCombatant.ObjectUI.HideTurnIcon();
+			targetList.Clear();
+
+			ShuffleDeadInParty(playerRanks);
+
+			turnList.Add(currentCombatant);
 			turnList.RemoveAt(0);
 		}
 	}
@@ -179,21 +182,19 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private bool IsTargetValid(BattleCombatant target) {
+		// targeting enemies
 		if (selectedAbility.TargetType == AbilityTarget.Enemies && Enemies.Contains(target)) {
-			int enemyId = Enemies.IndexOf(target) + Players.Count;
-			int rank = enemyRanks.IndexOf(enemyId);
-
+			int rank = enemyRanks.IndexOf(target);
 			return selectedAbility.TargetableRanks[rank] && !target.IsDead;
 		} 
 		// targeting players
 		else if (selectedAbility.TargetType == AbilityTarget.Players && Players.Contains(target)) {
-			int playerId = Players.IndexOf(target);
-			int rank = playerRanks.IndexOf(playerId);
-			
+			int rank = playerRanks.IndexOf(target);
 			return selectedAbility.TargetableRanks[rank] && !target.IsDead;
 		} 
-		else if (selectedAbility.TargetType == AbilityTarget.Self)  {
-			return lastSelectedPlayer == target;
+		// targeting self
+		else if (selectedAbility.TargetType == AbilityTarget.Self) {
+			return currentCombatant == target;
 		}
 
 		return false;
@@ -204,41 +205,68 @@ public class BattleController : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Swaps the positions of the current player 
-	/// with another party member.
+	/// Swaps the positions of the current player with another party member.
 	/// Only usable with player's party.
 	/// </summary>
-	private IEnumerator SwapRanks() {
-		int targetId = Players.IndexOf(selectedTarget);
-		int targetRank = playerRanks.IndexOf(targetId);
-		int currentRank = playerRanks.IndexOf(currentTurn);
+	private void SwapRanks(BattleCombatant current, BattleCombatant target) {
+		int currentRank = playerRanks.IndexOf(current);
+		int targetRank = playerRanks.IndexOf(target);
 
 		// swap Ranks of current player with target in PlayerRanks
-		int tmp = playerRanks[targetRank];
+		BattleCombatant tmp = playerRanks[targetRank];
 		playerRanks[targetRank] = playerRanks[currentRank];
 		playerRanks[currentRank] = tmp;
 
 		// swap transform positions of current player with target
-		Vector3 current = Players[currentTurn].transform.position;
-		Vector3 target = Players[targetId].transform.position;
-		Players[currentTurn].transform.position = target;
-		Players[targetId].transform.position = current;
-
-		yield return new WaitForSeconds(1.5f);
+		Vector3 currentPos = Players[currentRank].transform.position;
+		Vector3 targetPos = Players[targetRank].transform.position;
+		Players[currentRank].transform.position = targetPos;
+		Players[targetRank].transform.position = currentPos;
 	}
 
-	private BattleCombatant GetCurrentCombatant() {
-		if (currentTurn < Players.Count)
-			return Players[currentTurn];
-		
-		return Enemies[currentTurn - Players.Count];
+	private void ShuffleDeadInParty(List<BattleCombatant> partyRanks) {
+		int numDead = NumDeadInParty(partyRanks);
+		bool deadFound = false;
+
+		for (int rank = 0; rank < partyRanks.Count - numDead; rank++) {
+			if (partyRanks[rank].IsDead && rank < partyRanks.Count) {
+				BattleCombatant temp = partyRanks[rank];
+				partyRanks.RemoveAt(rank);
+
+				deadFound = true;
+
+				if (numDead > 1) {
+					int index = partyRanks.Count+1 - numDead;
+					partyRanks.Insert(index, temp);
+				} else {
+					partyRanks.Add(temp);
+				}
+			}
+		}
+
+		// update player transform positions
+		if (deadFound) {
+			for (int i = 0; i < Players.Count; i++) {
+				partyRanks[i].transform.position = PlayerPos[i].position;
+			}
+		}
+	}
+
+	private int NumDeadInParty(List<BattleCombatant> party) {
+		int count = 0;
+		foreach (BattleCombatant combatant in party) {
+			if (combatant.IsDead) count++;
+      	}
+
+		return count;
 	}
 
 	private void ShowTargets() {
+		targetList.Clear();
+
 		if (selectedAbility.TargetType == AbilityTarget.Enemies) {
 			foreach (BattleCombatant enemy in Enemies) {
 				if (IsTargetValid(enemy)) {
-					enemy.ObjectUI.HideTargetArrow();
 					enemy.ObjectUI.ShowTargetArrow();
 					targetList.Add(enemy);
 				} 
@@ -283,14 +311,11 @@ public class BattleController : MonoBehaviour {
 		HideTargets();
 
 		if (UIController.WhichButtonIsSelected() == index) {
-			selectedAbility = GetCurrentCombatant().Abilities[index];
-			targetList.Clear();
+			selectedAbility = currentCombatant.Abilities[index];
 			ShowTargets();
 		} else {
 			selectedAbility = null;
 		}
-
-
 	}
 
 	public void Btn_Swap() {
@@ -301,7 +326,9 @@ public class BattleController : MonoBehaviour {
 
 			// set targetable ranks 
 			swap.TargetableRanks = Enumerable.Repeat(true, 4).ToList();
-			int rankIndex = playerRanks.IndexOf(currentTurn);
+			int rank = playerRanks.IndexOf(currentCombatant);
+			swap.TargetableRanks[rank] = false;
+
 			ShowTargets();
 		} else {
 			selectedAbility = null;
