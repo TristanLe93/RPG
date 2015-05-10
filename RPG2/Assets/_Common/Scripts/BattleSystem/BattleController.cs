@@ -19,9 +19,13 @@ public class BattleController : MonoBehaviour {
 
 	private List<int> turnList;
 	private int currentTurn;
-
+	private Ability swap;
 
 	private void Start () {
+		swap = ScriptableObject.CreateInstance<Ability>();
+		swap.TargetType = AbilityTarget.Players;
+		swap.UseableRanks = Enumerable.Repeat(true, 4).ToList();
+
 		// automatically start a battle
 		StartCoroutine(UpdateState());
 	}
@@ -78,8 +82,17 @@ public class BattleController : MonoBehaviour {
 		UIController.UpdateHealthBar(player.Health);
 		UIController.EnableButtons(player.Abilities, rank);
 
+		// select an ability and use it on the target(s)
 		yield return StartCoroutine(SelectAbilityAndTarget());
-		yield return StartCoroutine(player.UseAbility(selectedAbility, selectedTarget));
+
+		if (selectedAbility == swap) {
+			yield return StartCoroutine(SwapRanks());
+		} 
+		else {
+			yield return StartCoroutine(
+				player.UseAbility(selectedAbility, selectedTarget));
+		}
+
 		EndTurn();
 	}
 
@@ -168,7 +181,8 @@ public class BattleController : MonoBehaviour {
 			int rank = playerRanks.IndexOf(playerId);
 			
 			return selectedAbility.TargetableRanks[rank] && !target.IsDead;
-		} else if (selectedAbility.TargetType == AbilityTarget.Self)  {
+		} 
+		else if (selectedAbility.TargetType == AbilityTarget.Self)  {
 			return lastSelectedPlayer == target;
 		}
 
@@ -177,6 +191,30 @@ public class BattleController : MonoBehaviour {
 
 	private bool IsPartyDead(List<BattleCombatant> party) {
 		return party.Find((BattleCombatant b) => b.IsDead == false) == null;
+	}
+
+	/// <summary>
+	/// Swaps the positions of the current player 
+	/// with another party member.
+	/// Only usable with player's party.
+	/// </summary>
+	private IEnumerator SwapRanks() {
+		int targetId = Players.IndexOf(selectedTarget);
+		int targetRank = playerRanks.IndexOf(targetId);
+		int currentRank = playerRanks.IndexOf(currentTurn);
+
+		// swap Ranks of current player with target in PlayerRanks
+		int tmp = playerRanks[targetRank];
+		playerRanks[targetRank] = playerRanks[currentRank];
+		playerRanks[currentRank] = tmp;
+
+		// swap transform positions of current player with target
+		Vector3 current = Players[currentTurn].transform.position;
+		Vector3 target = Players[targetId].transform.position;
+		Players[currentTurn].transform.position = target;
+		Players[targetId].transform.position = current;
+
+		yield return new WaitForSeconds(1.5f);
 	}
 
 	private BattleCombatant GetCurrentCombatant() {
@@ -237,4 +275,21 @@ public class BattleController : MonoBehaviour {
 			HideTargets();
 		}
 	}
+
+	public void Btn_Swap() {
+		if (UIController.IsAButtonSelected()) {
+			selectedAbility = swap;
+
+			// set targetable ranks 
+			swap.TargetableRanks = Enumerable.Repeat(true, 4).ToList();
+			int rankIndex = playerRanks.IndexOf(currentTurn);
+			swap.TargetableRanks[rankIndex] = false;
+
+			ShowTargets();
+		} else {
+			selectedAbility = null;
+			HideTargets();
+		}
+	}
+
 }

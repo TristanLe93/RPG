@@ -25,9 +25,7 @@ public class BattleUIController : MonoBehaviour {
 	public GameObject Tooltip;
 	public Text TooltipText;
 
-
-
-
+	
 	void Start() {
 		Tooltip.transform.position = new Vector3(10000, 10000, 0);
 		DisableButtons();
@@ -66,7 +64,8 @@ public class BattleUIController : MonoBehaviour {
 			Buttons[i].interactable = abilities[i].IsUsable(rank);
         }
 
-		// TODO: ENABLE WHEN DONE BtnAbility5.interactable = true;
+		// swap button enabled
+		Buttons[4].interactable = true;
 	}
 
 	public void ResetButtons() {
