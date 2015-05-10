@@ -13,6 +13,7 @@ public class BattleController : MonoBehaviour {
 	private Ability selectedAbility;
 	private BattleCombatant selectedTarget;
 	private BattleCombatant lastSelectedPlayer;
+	private List<BattleCombatant> targetList;
 
 	private List<int> playerRanks;
 	private List<int> enemyRanks;
@@ -21,10 +22,14 @@ public class BattleController : MonoBehaviour {
 	private int currentTurn;
 	private Ability swap;
 
+
 	private void Start () {
+		// initialise Swap ability
 		swap = ScriptableObject.CreateInstance<Ability>();
 		swap.TargetType = AbilityTarget.Players;
 		swap.UseableRanks = Enumerable.Repeat(true, 4).ToList();
+
+		targetList = new List<BattleCombatant>();
 
 		// automatically start a battle
 		StartCoroutine(UpdateState());
@@ -89,8 +94,7 @@ public class BattleController : MonoBehaviour {
 			yield return StartCoroutine(SwapRanks());
 		} 
 		else {
-			yield return StartCoroutine(
-				player.UseAbility(selectedAbility, selectedTarget));
+			yield return StartCoroutine(player.UseAbility(selectedAbility, targetList));
 		}
 
 		EndTurn();
@@ -114,6 +118,7 @@ public class BattleController : MonoBehaviour {
 	private void EndTurn() {
 		BattleCombatant b = GetCurrentCombatant();
 		b.ObjectUI.HideTurnIcon();
+		targetList.Clear();
 
 		// if a party is victorious, play victory/game over
 		if (IsPartyDead(Players)) {
@@ -141,6 +146,11 @@ public class BattleController : MonoBehaviour {
 			}
 			
 			yield return null;
+		}
+
+		if (!selectedAbility.MultiTarget) {
+			targetList.Clear();
+			targetList.Add(selectedTarget);
 		}
 
 		HideTargets();
@@ -226,16 +236,20 @@ public class BattleController : MonoBehaviour {
 
 	private void ShowTargets() {
 		if (selectedAbility.TargetType == AbilityTarget.Enemies) {
-			for (int i = 0; i < Enemies.Count; i++) {
-				if (IsTargetValid(Enemies[i])) {
-					Enemies[i].ObjectUI.ShowTargetArrow();
-				}
+			foreach (BattleCombatant enemy in Enemies) {
+				if (IsTargetValid(enemy)) {
+					enemy.ObjectUI.HideTargetArrow();
+					enemy.ObjectUI.ShowTargetArrow();
+					targetList.Add(enemy);
+				} 
 			}
 		} 
 		else if (selectedAbility.TargetType == AbilityTarget.Players) {
-			for (int i = 0; i < Players.Count; i++) {
-				if (IsTargetValid(Players[i]))
-					Players[i].ObjectUI.ShowTargetArrow();
+			foreach (BattleCombatant player in Players) {
+				if (IsTargetValid(player)) {
+					player.ObjectUI.ShowTargetArrow();
+					targetList.Add(player);
+				} 
 			}
 		} 
 		else {
@@ -245,11 +259,11 @@ public class BattleController : MonoBehaviour {
 	}
 	
 	private void HideTargets() {
-		foreach (BattleCombatant b in Enemies) {
-			b.ObjectUI.HideTargetArrow();
+		foreach (BattleCombatant e in Enemies) {
+			e.ObjectUI.HideTargetArrow();
 		}
-		foreach (BattleCombatant b in Players) {
-			b.ObjectUI.HideTargetArrow();
+		foreach (BattleCombatant p in Players) {
+			p.ObjectUI.HideTargetArrow();
 		}
 	}
 
@@ -266,29 +280,31 @@ public class BattleController : MonoBehaviour {
 	}
 	
 	public void Btn_SetAbility(int index) {
-		if (UIController.IsAButtonSelected()) {
+		HideTargets();
+
+		if (UIController.WhichButtonIsSelected() == index) {
 			selectedAbility = GetCurrentCombatant().Abilities[index];
-			HideTargets();
+			targetList.Clear();
 			ShowTargets();
 		} else {
 			selectedAbility = null;
-			HideTargets();
 		}
+
+
 	}
 
 	public void Btn_Swap() {
+		HideTargets();
+
 		if (UIController.IsAButtonSelected()) {
 			selectedAbility = swap;
 
 			// set targetable ranks 
 			swap.TargetableRanks = Enumerable.Repeat(true, 4).ToList();
 			int rankIndex = playerRanks.IndexOf(currentTurn);
-			swap.TargetableRanks[rankIndex] = false;
-
 			ShowTargets();
 		} else {
 			selectedAbility = null;
-			HideTargets();
 		}
 	}
 

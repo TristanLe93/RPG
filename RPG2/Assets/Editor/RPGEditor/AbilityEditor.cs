@@ -7,6 +7,7 @@ public class AbilityEditor : EditorWindow {
 	private string abilityName = string.Empty;
 	private AbilityType type = AbilityType.Melee;
 	private AbilityTarget targets = AbilityTarget.Enemies;
+	private bool multiTarget = false;
 	private int power = 0;
 
 	private List<bool> useList = Enumerable.Repeat(false, 4).ToList();
@@ -53,6 +54,9 @@ public class AbilityEditor : EditorWindow {
 		targetList[2] = EditorGUILayout.Toggle(targetList[2]);
 		targetList[3] = EditorGUILayout.Toggle(targetList[3]);
 		GUILayout.EndHorizontal();
+
+		GUILayout.Space(5);
+		multiTarget = EditorGUILayout.Toggle("Multi-target", multiTarget);
 		EditorGUI.EndDisabledGroup();
 
 		GUILayout.Space(20);
@@ -69,6 +73,7 @@ public class AbilityEditor : EditorWindow {
 		ability.TargetType = targets;
 		ability.Power = power;
 		ability.UseableRanks = useList;
+		ability.MultiTarget = multiTarget;
 
 		if (targets == AbilityTarget.Self) {
 			ability.TargetableRanks = Enumerable.Repeat(true, 4).ToList();

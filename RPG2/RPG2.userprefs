@@ -1,10 +1,8 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Common\Scripts\BattleSystem\BattleUIController.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Common\Scripts\BattleSystem\ObjectUI.cs">
     <Files>
-      <File FileName="Assets\_Common\Scripts\BattleSystem\BattleController.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Common\Scripts\BattleSystem\BattleUIController.cs" Line="71" Column="1" />
-      <File FileName="Assets\_Common\Scripts\BattleSystem\Ability.cs" Line="1" Column="1" />
+      <File FileName="Assets\_Common\Scripts\BattleSystem\ObjectUI.cs" Line="32" Column="26" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

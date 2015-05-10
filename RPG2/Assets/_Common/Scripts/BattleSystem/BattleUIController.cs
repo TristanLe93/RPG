@@ -80,6 +80,10 @@ public class BattleUIController : MonoBehaviour {
 		return Buttons.Find((Toggle t) => t.isOn);
 	}
 
+	public int WhichButtonIsSelected() {
+		return Buttons.FindIndex((Toggle t) => t.isOn);
+	}
+
 	public void ShowAbilityName(string abilityName) {
 		AbilityNameText.text = abilityName;
 		AbilityNameAnim.Play("AbilityNameShow");

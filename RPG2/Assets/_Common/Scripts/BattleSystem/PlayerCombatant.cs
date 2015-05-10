@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public abstract class PlayerCombatant : BattleCombatant {
 	public override void Start() {
@@ -10,20 +11,22 @@ public abstract class PlayerCombatant : BattleCombatant {
 		base.Start();
 	}
 
-	public virtual IEnumerator UseAbility(Ability ability, BattleCombatant target) {
+	public virtual IEnumerator UseAbility(Ability ability, List<BattleCombatant> targets) {
 		PlayAnimation(ability.Type);
 		
-		// wait for ability animation
+		// wait for ability animation to complete
 		do {
 			yield return null;
 		} while (isAnimating());
-		
-		ExecuteAbility(ability, target);
-		
-		// wait for ability animation
+
+		foreach (BattleCombatant target in targets) {
+			ExecuteAbility(ability, target);
+		}
+
+		// wait for target animation to complete
 		do {
 			yield return null;
-		} while (target.isAnimating());
+		} while (targets[0].isAnimating());
 	}
 
 	protected void PlayAnimation(AbilityType type) {

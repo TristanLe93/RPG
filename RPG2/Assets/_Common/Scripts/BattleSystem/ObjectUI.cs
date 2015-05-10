@@ -5,12 +5,14 @@ using System.Collections;
 public class ObjectUI : MonoBehaviour {
 	public Image HealthBar;
 	public Image TurnIcon;
+	public Image TargetArrow;
 	public Text DamageText;
 	public Animator DamageTextAnim;
-	public Animator TargetArrowAnim;
+
 
 	void Start() {
 		HideTurnIcon();
+		HideTargetArrow();
 	}
 
 	public void SetHealthFillAmount(float fillAmount) {
@@ -28,11 +30,11 @@ public class ObjectUI : MonoBehaviour {
 	}
 
 	public void ShowTargetArrow() {
-		TargetArrowAnim.Play("TargetArrowAnim");
+		TargetArrow.color = new Color(255, 255, 255, 255);
 	}
 
 	public void HideTargetArrow() {
-		TargetArrowAnim.Play("TargetArrowIdle");
+		TargetArrow.color = new Color(255, 255, 255, 0);
 	}
 
 	public void ShowTurnIcon() {
