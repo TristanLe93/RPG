@@ -6,7 +6,7 @@ public class Lancer : PlayerCombatant {
 		base.Start();
 
 		Name = "Lancer" + Random.Range(0, 100);
-		Health = new Stat(10);
+		Health = new Stat(50);
 		Strength = 10;
 	}
 

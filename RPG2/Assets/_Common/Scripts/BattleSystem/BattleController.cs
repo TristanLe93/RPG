@@ -131,7 +131,8 @@ public class BattleController : MonoBehaviour {
 			currentCombatant.ObjectUI.HideTurnIcon();
 			targetList.Clear();
 
-			ShuffleDeadInParty(playerRanks);
+			ShuffleDeadInParty(playerRanks, PlayerPos);
+			ShuffleDeadInParty(enemyRanks, EnemyPos);
 
 			turnList.Add(currentCombatant);
 			turnList.RemoveAt(0);
@@ -185,11 +186,41 @@ public class BattleController : MonoBehaviour {
 		// targeting enemies
 		if (selectedAbility.TargetType == AbilityTarget.Enemies && Enemies.Contains(target)) {
 			int rank = enemyRanks.IndexOf(target);
+			int numDead = NumDeadInParty(Enemies);
+
+			// if back rank, then push the targetable further
+			if (numDead > 0 && selectedAbility.TargetableRanks[3]) {
+				List<bool> newTargetableList = new List<bool>(selectedAbility.TargetableRanks);
+	
+				while (numDead > 0) {
+					newTargetableList.RemoveAt(0);
+					newTargetableList.Add(true);
+					numDead -= 1;
+				}
+
+				return newTargetableList[rank] && !target.IsDead;
+			}
+
 			return selectedAbility.TargetableRanks[rank] && !target.IsDead;
 		} 
 		// targeting players
 		else if (selectedAbility.TargetType == AbilityTarget.Players && Players.Contains(target)) {
 			int rank = playerRanks.IndexOf(target);
+			int numDead = NumDeadInParty(Players);
+			
+			// if back rank, then push the targetable further
+			if (numDead > 0 && selectedAbility.TargetableRanks[3]) {
+				List<bool> newTargetableList = new List<bool>(selectedAbility.TargetableRanks);
+				
+				while (numDead > 0) {
+					newTargetableList.RemoveAt(0);
+					newTargetableList.Add(true);
+					numDead -= 1;
+				}
+				
+				return newTargetableList[rank] && !target.IsDead;
+			}
+
 			return selectedAbility.TargetableRanks[rank] && !target.IsDead;
 		} 
 		// targeting self
@@ -224,7 +255,7 @@ public class BattleController : MonoBehaviour {
 		Players[targetRank].transform.position = currentPos;
 	}
 
-	private void ShuffleDeadInParty(List<BattleCombatant> partyRanks) {
+	private void ShuffleDeadInParty(List<BattleCombatant> partyRanks, List<Transform> partyPos) {
 		int numDead = NumDeadInParty(partyRanks);
 		bool deadFound = false;
 
@@ -246,8 +277,8 @@ public class BattleController : MonoBehaviour {
 
 		// update player transform positions
 		if (deadFound) {
-			for (int i = 0; i < Players.Count; i++) {
-				partyRanks[i].transform.position = PlayerPos[i].position;
+			for (int i = 0; i < partyRanks.Count; i++) {
+				partyRanks[i].transform.position = partyPos[i].position;
 			}
 		}
 	}
