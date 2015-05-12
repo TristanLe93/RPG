@@ -33,6 +33,7 @@ public abstract class EnemyCombatant : BattleCombatant {
 		ExecuteAbility(ability, target);
 		ui.UpdateUI(target.Name, target.Abilities);
 		ui.UpdateHealthBar(target.Health);
+		ui.UpdateStatusEffectsIcons(target.StatusEffects);
 
 		do {
 			yield return null;

@@ -1,8 +1,10 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Common\Scripts\BattleSystem\StatusEffect.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Common\Scripts\BattleSystem\UIStatusEffects.cs">
     <Files>
-      <File FileName="Assets\_Common\Scripts\BattleSystem\StatusEffect.cs" Line="11" Column="1" />
+      <File FileName="Assets\_Common\Scripts\BattleSystem\BattleUIController.cs" Line="101" Column="38" />
+      <File FileName="Assets\_Common\Scripts\BattleSystem\BattleController.cs" Line="90" Column="31" />
+      <File FileName="Assets\_Common\Scripts\BattleSystem\UIStatusEffects.cs" Line="43" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

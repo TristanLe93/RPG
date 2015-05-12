@@ -60,6 +60,7 @@
      <Compile Include="Assets\_Common\Scripts\BattleSystem\PlayerCombatant.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\Stat.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\StatusEffect.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\UIStatusEffects.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

@@ -33,6 +33,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 		if (Health.IsCurrentZero()) {
 			IsDead = true;
+			StatusEffects.Clear();
 			anim.SetBool("isDead", true);
 		}
 	}

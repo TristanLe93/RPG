@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class BattleUIController : MonoBehaviour {
+	public UIStatusEffects StatusController;
+
 	public List<Toggle> Buttons = new List<Toggle>(5);
-	private List<string> abilityTooltips = new List<string>();
 
 	public Text Ability1;
 	public Text Ability2;
@@ -24,6 +25,8 @@ public class BattleUIController : MonoBehaviour {
 
 	public GameObject Tooltip;
 	public Text TooltipText;
+
+	private List<string> abilityTooltips = new List<string>();
 
 	
 	void Start() {
@@ -104,5 +107,13 @@ public class BattleUIController : MonoBehaviour {
 
 	public void HideTooltip() {
 		Tooltip.transform.position = new Vector3(10000, 10000, 0);
+	}
+
+	public void UpdateStatusEffectsIcons(List<StatusEffect> statusList) {
+		StatusController.RemoveAllStatusIcons();
+
+		foreach (StatusEffect status in statusList) {
+			StatusController.AddStatusIcon(status.Icon);
+		}
 	}
 }

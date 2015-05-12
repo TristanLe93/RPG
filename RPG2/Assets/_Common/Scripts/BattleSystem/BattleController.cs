@@ -94,6 +94,7 @@ public class BattleController : MonoBehaviour {
 		player.ObjectUI.ShowTurnIcon();
 		UIController.UpdateUI(player.Name, player.Abilities);
 		UIController.UpdateHealthBar(player.Health);
+		UIController.UpdateStatusEffectsIcons(player.StatusEffects);
 		UIController.EnableButtons(player.Abilities, rank);
 
 		// select an ability and use it on the target(s)
@@ -289,6 +290,15 @@ public class BattleController : MonoBehaviour {
 				partyRanks[i].transform.position = partyPos[i].position;
 			}
 		}
+	}
+
+	private int NumDeadInParty(List<BattleCombatant> party) {
+		int count = 0;
+		foreach (BattleCombatant combatant in party) {
+			if (combatant.IsDead) count++;
+      	}
+
+		return count;
 	}
 
 	private void ShowTargets() {
