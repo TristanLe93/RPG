@@ -38,8 +38,16 @@ public class BattleController : MonoBehaviour {
 			currentCombatant = turnList[0];
 			selectedAbility = null;
 			selectedTarget = null;
-			
+
+			bool combatantStunned = currentCombatant.IsStunned();
+			currentCombatant.DoStatusEffects();
+
 			if (currentCombatant.IsDead) {
+				EndTurn();
+			} else if (combatantStunned) {
+				UIController.ShowAbilityName("Stunned!");
+				currentCombatant.ObjectUI.ShowTurnIcon();
+				yield return new WaitForSeconds(1.5f);
 				EndTurn();
 			} else if (currentCombatant is PlayerCombatant) {
 				yield return StartCoroutine(PlayerTurn());
@@ -106,6 +114,11 @@ public class BattleController : MonoBehaviour {
 		EnemyCombatant enemy = (EnemyCombatant)currentCombatant;
 		enemy.ObjectUI.ShowTurnIcon();
 		UIController.DisableButtons();
+
+		// wait for any damage/heal animations
+		do { 
+			yield return null;
+		} while (enemy.isAnimating());
 
 		yield return StartCoroutine(enemy.BattleAI(UIController, Players));
 		UIController.UpdateHealthBar(lastSelectedPlayer.Health);
@@ -256,40 +269,26 @@ public class BattleController : MonoBehaviour {
 	}
 
 	private void ShuffleDeadInParty(List<BattleCombatant> partyRanks, List<Transform> partyPos) {
-		int numDead = NumDeadInParty(partyRanks);
-		bool deadFound = false;
+		List<BattleCombatant> deadBodies = new List<BattleCombatant>();
 
-		for (int rank = 0; rank < partyRanks.Count - numDead; rank++) {
-			if (partyRanks[rank].IsDead && rank < partyRanks.Count) {
-				BattleCombatant temp = partyRanks[rank];
+		// remove the dead bodies from party
+		for (int rank = 0; rank < partyRanks.Count; rank++) {
+			if (partyRanks[rank].IsDead) {
+				deadBodies.Add(partyRanks[rank]);
 				partyRanks.RemoveAt(rank);
-
-				deadFound = true;
-
-				if (numDead > 1) {
-					int index = partyRanks.Count+1 - numDead;
-					partyRanks.Insert(index, temp);
-				} else {
-					partyRanks.Add(temp);
-				}
+				rank--;
 			}
 		}
 
 		// update player transform positions
-		if (deadFound) {
+		if (deadBodies.Count > 0) {
+			// add dead bodies back to party
+			partyRanks.AddRange(deadBodies);
+
 			for (int i = 0; i < partyRanks.Count; i++) {
 				partyRanks[i].transform.position = partyPos[i].position;
 			}
 		}
-	}
-
-	private int NumDeadInParty(List<BattleCombatant> party) {
-		int count = 0;
-		foreach (BattleCombatant combatant in party) {
-			if (combatant.IsDead) count++;
-      	}
-
-		return count;
 	}
 
 	private void ShowTargets() {

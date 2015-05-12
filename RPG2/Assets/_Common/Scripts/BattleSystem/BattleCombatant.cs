@@ -7,6 +7,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 	public Stat Health { get; protected set; }
 	public int Strength { get; protected set; }
 	public List<Ability> Abilities = new List<Ability>(4);
+	public List<StatusEffect> StatusEffects = new List<StatusEffect>();
 
 	public int AnimationLayerIndex = 0;
 	public bool IsDead = false;
@@ -42,7 +43,39 @@ public abstract class BattleCombatant : MonoBehaviour {
 		ObjectUI.ShowHealValue(value.ToString());
 		anim.SetTrigger("playHealing");
 	}
-	
+
+	public void DoStatusEffects() {
+		int damage = 0;
+
+		for (int i = 0; i < StatusEffects.Count; i++) {
+			if (StatusEffects[i].DamagePerTurn > 0) {
+				damage += StatusEffects[i].DamagePerTurn;
+			}
+
+			StatusEffects[i].Duration -= 1;
+
+			// remove completed status effects
+			if (StatusEffects[i].Duration <= 0) {
+				StatusEffects.RemoveAt(i);
+				i--;
+			}
+		}
+
+		if (damage > 0) {
+			this.Damage(damage);
+		}
+	}
+
+	public bool IsStunned() {
+		foreach (StatusEffect status in StatusEffects) {
+			if (status.SkipsTurn) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public bool isAnimating() {
 		AnimatorStateInfo currentState = 
 			anim.GetCurrentAnimatorStateInfo(AnimationLayerIndex);

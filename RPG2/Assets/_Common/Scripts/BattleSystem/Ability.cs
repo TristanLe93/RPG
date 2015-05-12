@@ -10,6 +10,7 @@ public class Ability : ScriptableObject {
 
 	public List<bool> UseableRanks = new List<bool>(4);
 	public List<bool> TargetableRanks = new List<bool>(4);
+	public List<StatusEffect> ApplyStatus = new List<StatusEffect>();
 
 	public bool IsUsable(int userRankPos) {
 		return UseableRanks[userRankPos];

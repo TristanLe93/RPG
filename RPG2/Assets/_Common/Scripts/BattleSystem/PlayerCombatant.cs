@@ -62,6 +62,14 @@ public abstract class PlayerCombatant : BattleCombatant {
 			target.Damage(dmg);
 			break;
 		}
+
+		// apply status effect to target if any
+		if (ability.ApplyStatus.Count > 0) {
+			foreach (StatusEffect status in ability.ApplyStatus) {
+				StatusEffect statusClone = Object.Instantiate(status) as StatusEffect;
+				target.StatusEffects.Add(statusClone);
+			}
+		}
 	}
 
 	public void PlayVictoryAnim() {

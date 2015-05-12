@@ -7,7 +7,7 @@ public class EnemyLancer : EnemyCombatant {
 		base.Start();
 
 		Name = "Enemy";
-		Health = new Stat(10);
+		Health = new Stat(50);
 		Strength = 10;
 	}
 
