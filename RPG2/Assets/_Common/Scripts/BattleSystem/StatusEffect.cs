@@ -7,4 +7,13 @@ public class StatusEffect : ScriptableObject {
 	public int Duration;
 	public int DamagePerTurn;
 	public bool SkipsTurn;
+
+	// stat modifiers (percentage +-)
+	public int Strength;
+	public int Defense;
+	public int Magic;
+	public int Spirit;
+	public int Speed;
+	public int Dodge;
+	public int Accuracy;
 }

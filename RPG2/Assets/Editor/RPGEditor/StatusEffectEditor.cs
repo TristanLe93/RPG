@@ -9,6 +9,15 @@ public class StatusEffectEditor : EditorWindow {
 	private int damagePerTurn = 0;
 	private bool skipsTurn = false;
 
+	// stat mods (percentage)
+	private int strength;
+	private int defense;
+	private int magic;
+	private int spirit;
+	private int speed;
+	private int dodge;
+	private int accuracy;
+
 
 	[MenuItem("RPGEditor/Status Effect Editor")]
 	public static void ShowWindow() {
@@ -28,6 +37,18 @@ public class StatusEffectEditor : EditorWindow {
 
 		GUILayout.Space(10);
 
+		GUILayout.Label("Stat Modifiers (Percentage)", EditorStyles.boldLabel);
+		GUILayout.Label("Positive numbers = stat increase");
+		GUILayout.Label("Negative numbers = stat decrease");
+		strength = EditorGUILayout.IntField("strength", strength);
+		defense = EditorGUILayout.IntField("defense", defense);
+		magic = EditorGUILayout.IntField("magic", magic);
+		spirit = EditorGUILayout.IntField("spirit", spirit);
+		speed = EditorGUILayout.IntField("speed", speed);
+		dodge = EditorGUILayout.IntField("dodge", dodge);
+		accuracy = EditorGUILayout.IntField("accuracy", accuracy);
+
+
 		if (GUILayout.Button("Create Status Effect")) {
 			CreateStatus();
 		}
@@ -39,6 +60,13 @@ public class StatusEffectEditor : EditorWindow {
 		status.Duration = duration;
 		status.DamagePerTurn = damagePerTurn;
 		status.SkipsTurn = skipsTurn;
+		status.Strength = strength;
+		status.Defense = defense;
+		status.Magic = magic;
+		status.Spirit = spirit;
+		status.Speed = speed;
+		status.Dodge = dodge;
+		status.Accuracy = accuracy;
 
 		AssetDatabase.CreateAsset(status, "Assets/_Common/StatusEffects/" + statusName + ".asset");
 		AssetDatabase.SaveAssets();

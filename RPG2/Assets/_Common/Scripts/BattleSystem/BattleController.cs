@@ -81,7 +81,7 @@ public class BattleController : MonoBehaviour {
 		// setup HUD
 		lastSelectedPlayer = Players[0];
 		UIController.UpdateUI(lastSelectedPlayer.Name, lastSelectedPlayer.Abilities);
-		UIController.UpdateHealthBar(lastSelectedPlayer.Health);
+		UIController.UpdateHealthBar(lastSelectedPlayer.Stats.Health);
 		UIController.DisableButtons();
 	}
 	
@@ -93,7 +93,7 @@ public class BattleController : MonoBehaviour {
 		// Update Battle UI
 		player.ObjectUI.ShowTurnIcon();
 		UIController.UpdateUI(player.Name, player.Abilities);
-		UIController.UpdateHealthBar(player.Health);
+		UIController.UpdateHealthBar(player.Stats.Health);
 		UIController.UpdateStatusEffectsIcons(player.StatusEffects);
 		UIController.EnableButtons(player.Abilities, rank);
 
@@ -109,7 +109,7 @@ public class BattleController : MonoBehaviour {
 		}
 
 		// update current player after all effects been used
-		UIController.UpdateHealthBar(player.Health);
+		UIController.UpdateHealthBar(player.Stats.Health);
 		UIController.UpdateStatusEffectsIcons(player.StatusEffects);
 
 		EndTurn();

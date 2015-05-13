@@ -53,6 +53,7 @@
      <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleController.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleState.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\BattleUIController.cs" />
+     <Compile Include="Assets\_Common\Scripts\BattleSystem\CombatantStats.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\EnemyCombatant.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\EnemyLancer.cs" />
      <Compile Include="Assets\_Common\Scripts\BattleSystem\Lancer.cs" />

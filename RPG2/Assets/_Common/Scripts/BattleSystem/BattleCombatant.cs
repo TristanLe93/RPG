@@ -3,20 +3,25 @@ using System.Collections.Generic;
 using System.Collections;
 
 public abstract class BattleCombatant : MonoBehaviour {
-	public string Name { get; protected set; }
-	public Stat Health { get; protected set; }
-	public int Strength { get; protected set; }
-	public List<Ability> Abilities = new List<Ability>(4);
-	public List<StatusEffect> StatusEffects = new List<StatusEffect>();
+	public string Name;
 
-	public int AnimationLayerIndex = 0;
+	[HideInInspector]
+	public CombatantStats Stats;
+	[HideInInspector]
+	public ObjectUI ObjectUI;
+	[HideInInspector]
 	public bool IsDead = false;
 
-	public ObjectUI ObjectUI { get; private set; }
+
+	public int AnimationLayerIndex = 0;
 	protected Animator anim;
+
+	public List<Ability> Abilities;
+	public List<StatusEffect> StatusEffects;
 
 	
 	public virtual void Start() {
+		Stats = GetComponent<CombatantStats>();
 		ObjectUI = GetComponent<ObjectUI>();
 		anim = GetComponent<Animator>();
 		anim.SetLayerWeight(AnimationLayerIndex, 1.0f);
@@ -26,16 +31,17 @@ public abstract class BattleCombatant : MonoBehaviour {
 	}
 
 	public void Damage(int value) {
-		if (value > 0) {
-			Health.Current -= value;
-			ObjectUI.SetHealthFillAmount(Health.GetRatio());
-			anim.SetTrigger("playStruck");
+		if (value <= 0) {
+			value = 1;
 		}
 
+		Stats.Health.Current -= value;
+		ObjectUI.SetHealthFillAmount(Stats.Health.GetRatio());
 		ObjectUI.ShowDamageValue(value.ToString());
+		anim.SetTrigger("playStruck");
 
 		// check if the player is dead
-		if (Health.IsCurrentZero()) {
+		if (Stats.Health.IsCurrentZero()) {
 			IsDead = true;
 			StatusEffects.Clear();
 			anim.SetBool("isDead", true);
@@ -44,12 +50,55 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 	public void Heal(int value) {
 		if (value > 0) {
-			Health.Current += value;
-			ObjectUI.SetHealthFillAmount(Health.GetRatio());
+			Stats.Health.Current += value;
+			ObjectUI.SetHealthFillAmount(Stats.Health.GetRatio());
 			ObjectUI.ShowHealValue(value.ToString());
 		}
 
 		anim.SetTrigger("playHealing");
+	}
+
+	protected void ExecuteAbility(Ability ability, BattleCombatant target) {
+		int dmg = 0;
+		
+		switch (ability.Type) {
+		case AbilityType.Melee: 
+			dmg = ability.Power + Stats.Strength - target.Stats.Defense;
+			target.Damage(dmg);
+			break;
+			
+		case AbilityType.Magic: 
+			dmg = ability.Power + Stats.Magic - target.Stats.Spirit;
+			target.Damage(dmg);
+			break;
+			
+		case AbilityType.Heal: 
+			dmg = ability.Power;
+			target.Heal(dmg);
+			break;
+			
+		case AbilityType.Ranged: 
+			dmg = ability.Power + Stats.Strength  - target.Stats.Defense;
+			target.Damage(dmg);
+			break;
+		}
+		
+		// apply status effect to target if any
+		if (ability.ApplyStatus.Count > 0) {
+			foreach (StatusEffect status in ability.ApplyStatus) {
+				StatusEffect statusClone = Object.Instantiate(status) as StatusEffect;
+				target.StatusEffects.Add(statusClone);
+			}
+		}
+	}
+
+	protected void PlayAnimation(AbilityType type) {
+		switch (type) {
+		case AbilityType.Melee: PlayAttackAnim(); break;
+		case AbilityType.Magic: PlayMagicAnim(); break;
+		case AbilityType.Heal: PlayItemAnim(); break;
+		case AbilityType.Ranged: PlayAttackAnim(); break;
+		}
 	}
 
 	public void DoStatusEffects() {

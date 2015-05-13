@@ -17,7 +17,7 @@ public abstract class EnemyCombatant : BattleCombatant {
 	}
 
 	public virtual IEnumerator BattleAI(BattleUIController ui, List<BattleCombatant> targetList) {
-		List<BattleCombatant> aliveTargets = targetList.Where(t => t.Health.Current > 0).ToList();
+		List<BattleCombatant> aliveTargets = targetList.Where(t => t.Stats.Health.Current > 0).ToList();
 		target = aliveTargets[Random.Range(0, aliveTargets.Count)];
 		ability = Abilities[0];
 
@@ -26,7 +26,7 @@ public abstract class EnemyCombatant : BattleCombatant {
 
 		// update target information
 		ui.UpdateUI(target.name, target.Abilities);
-		ui.UpdateHealthBar(target.Health);
+		ui.UpdateHealthBar(target.Stats.Health);
 		ui.UpdateStatusEffectsIcons(target.StatusEffects);
 	}
 
@@ -43,41 +43,6 @@ public abstract class EnemyCombatant : BattleCombatant {
 		} while (isAnimating());
 		
 		ExecuteAbility(ability, target);
-	}
-
-	protected void PlayAnimation(AbilityType type) {
-		switch (type) {
-		case AbilityType.Melee: PlayAttackAnim(); break;
-		case AbilityType.Magic: PlayMagicAnim(); break;
-		case AbilityType.Heal: PlayItemAnim(); break;
-		case AbilityType.Ranged: PlayAttackAnim(); break;
-		}
-	}
-	
-	protected void ExecuteAbility(Ability ability, BattleCombatant target) {
-		int dmg = 0;
-		
-		switch (ability.Type) {
-		case AbilityType.Melee: 
-			dmg = ability.Power + Strength;
-			target.Damage(dmg);
-			break;
-			
-		case AbilityType.Magic: 
-			dmg = ability.Power;
-			target.Damage(dmg);
-			break;
-			
-		case AbilityType.Heal: 
-			dmg = ability.Power;
-			target.Heal(dmg);
-			break;
-			
-		case AbilityType.Ranged: 
-			dmg = ability.Power + Strength;
-			target.Damage(dmg);
-			break;
-		}
 	}
 
 	public IEnumerator WaitForTargetAnimation() {
