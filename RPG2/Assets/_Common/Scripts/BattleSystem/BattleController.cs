@@ -108,6 +108,10 @@ public class BattleController : MonoBehaviour {
 			yield return StartCoroutine(player.UseAbility(selectedAbility, targetList));
 		}
 
+		// update current player after all effects been used
+		UIController.UpdateHealthBar(player.Health);
+		UIController.UpdateStatusEffectsIcons(player.StatusEffects);
+
 		EndTurn();
 	}
 
@@ -122,7 +126,7 @@ public class BattleController : MonoBehaviour {
 		} while (enemy.isAnimating());
 
 		yield return StartCoroutine(enemy.BattleAI(UIController, Players));
-		UIController.UpdateHealthBar(lastSelectedPlayer.Health);
+		yield return StartCoroutine(enemy.WaitForTargetAnimation());
 
 		EndTurn();
 	}

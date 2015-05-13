@@ -33,9 +33,7 @@ public class UIStatusEffects : MonoBehaviour {
 	}
 
 	public void RemoveStatusIconAt(int index) {
-		Image img = statusIcons[index];
-		Destroy(img);
-		statusIcons.RemoveAt(index);
+		RemoveStatus(index);
 
 		// recalculate the positions of the icons
 		if (index != statusIcons.Count-1) {
@@ -47,16 +45,19 @@ public class UIStatusEffects : MonoBehaviour {
 
 	public void RemoveAllStatusIcons() {
 		for (int i = statusIcons.Count-1; i >= 0; i--) {
-			Image img = statusIcons[i];
-			Destroy(img.gameObject);
-			statusIcons.RemoveAt(i);
-
+			RemoveStatus(i);
 		}
+	}
+
+	private void RemoveStatus(int index) {
+		Image img = statusIcons[index];
+		Destroy(img.gameObject);
+		statusIcons.RemoveAt(index);
 	}
 
 	private void CalculateIconPosition(Image newImage, int index) {
 		RectTransform imageRect = newImage.GetComponent<RectTransform>();
-		imageRect.sizeDelta = new Vector2(iconSize, iconSize);
+		//imageRect.sizeDelta = new Vector2(iconSize, iconSize);
 		
 		float offset = (iconSize * index) + (iconSpacing * index-1) + iconOffset;
 		float x = iconStartPosX + offset;

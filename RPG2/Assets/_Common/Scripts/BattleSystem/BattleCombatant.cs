@@ -26,11 +26,15 @@ public abstract class BattleCombatant : MonoBehaviour {
 	}
 
 	public void Damage(int value) {
-		Health.Current -= value;
-		ObjectUI.SetHealthFillAmount(Health.GetRatio());
-		ObjectUI.ShowDamageValue(value.ToString());
-		anim.SetTrigger("playStruck");
+		if (value > 0) {
+			Health.Current -= value;
+			ObjectUI.SetHealthFillAmount(Health.GetRatio());
+			anim.SetTrigger("playStruck");
+		}
 
+		ObjectUI.ShowDamageValue(value.ToString());
+
+		// check if the player is dead
 		if (Health.IsCurrentZero()) {
 			IsDead = true;
 			StatusEffects.Clear();
@@ -39,16 +43,19 @@ public abstract class BattleCombatant : MonoBehaviour {
 	}
 
 	public void Heal(int value) {
-		Health.Current += value;
-		ObjectUI.SetHealthFillAmount(Health.GetRatio());
-		ObjectUI.ShowHealValue(value.ToString());
+		if (value > 0) {
+			Health.Current += value;
+			ObjectUI.SetHealthFillAmount(Health.GetRatio());
+			ObjectUI.ShowHealValue(value.ToString());
+		}
+
 		anim.SetTrigger("playHealing");
 	}
 
 	public void DoStatusEffects() {
 		int damage = 0;
 
-		for (int i = 0; i < StatusEffects.Count; i++) {
+		for (int i = StatusEffects.Count-1; i >= 0; i--) {
 			if (StatusEffects[i].DamagePerTurn > 0) {
 				damage += StatusEffects[i].DamagePerTurn;
 			}
@@ -58,7 +65,6 @@ public abstract class BattleCombatant : MonoBehaviour {
 			// remove completed status effects
 			if (StatusEffects[i].Duration <= 0) {
 				StatusEffects.RemoveAt(i);
-				i--;
 			}
 		}
 

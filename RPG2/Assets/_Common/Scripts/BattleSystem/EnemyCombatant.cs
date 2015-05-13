@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 public abstract class EnemyCombatant : BattleCombatant {
-	
+	protected BattleCombatant target;
+	protected Ability ability;
+
+
 	public override void Start () {
 		base.Start();
 	}
@@ -15,15 +18,24 @@ public abstract class EnemyCombatant : BattleCombatant {
 
 	public virtual IEnumerator BattleAI(BattleUIController ui, List<BattleCombatant> targetList) {
 		List<BattleCombatant> aliveTargets = targetList.Where(t => t.Health.Current > 0).ToList();
-		BattleCombatant target = aliveTargets[Random.Range(0, aliveTargets.Count)];
-		Ability ability = Abilities[0];
+		target = aliveTargets[Random.Range(0, aliveTargets.Count)];
+		ability = Abilities[0];
 
-		ui.ShowAbilityName(ability.Name);
-		yield return new WaitForSeconds(1.5f);
-		yield return StartCoroutine(UseAbility(ui, ability, target));
+		yield return StartCoroutine(ShowAbility(ui));
+		yield return StartCoroutine(UseAbility(ability, target));
+
+		// update target information
+		ui.UpdateUI(target.name, target.Abilities);
+		ui.UpdateHealthBar(target.Health);
+		ui.UpdateStatusEffectsIcons(target.StatusEffects);
 	}
 
-	protected virtual IEnumerator UseAbility(BattleUIController ui, Ability ability, BattleCombatant target) {
+	protected IEnumerator ShowAbility(BattleUIController ui) {
+		ui.ShowAbilityName(ability.Name);
+		yield return new WaitForSeconds(1.5f);
+	}
+
+	protected virtual IEnumerator UseAbility(Ability ability, BattleCombatant target) {
 		PlayAnimation(ability.Type);
 
 		do {
@@ -31,13 +43,6 @@ public abstract class EnemyCombatant : BattleCombatant {
 		} while (isAnimating());
 		
 		ExecuteAbility(ability, target);
-		ui.UpdateUI(target.Name, target.Abilities);
-		ui.UpdateHealthBar(target.Health);
-		ui.UpdateStatusEffectsIcons(target.StatusEffects);
-
-		do {
-			yield return null;
-		} while (target.isAnimating());
 	}
 
 	protected void PlayAnimation(AbilityType type) {
@@ -73,5 +78,11 @@ public abstract class EnemyCombatant : BattleCombatant {
 			target.Damage(dmg);
 			break;
 		}
+	}
+
+	public IEnumerator WaitForTargetAnimation() {
+		do {
+			yield return null;
+		} while (target.isAnimating());
 	}
 }
