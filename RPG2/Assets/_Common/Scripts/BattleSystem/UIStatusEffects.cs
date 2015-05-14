@@ -2,6 +2,9 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+/// <summary>
+/// A UIController for the StatusEffects panel on the battle UI.
+/// </summary>
 public class UIStatusEffects : MonoBehaviour {
 	public Image prefab;
 

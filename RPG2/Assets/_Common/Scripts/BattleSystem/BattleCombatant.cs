@@ -1,21 +1,30 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
+/// <summary>
+/// A BattleCombatant is a participant in a battle who fights other BattleCombatants. 
+/// This class maintains statistics like health and strength.
+/// </summary>
 public abstract class BattleCombatant : MonoBehaviour {
 	public string Name;
 
+	// The stats of this combatant, attached via GameObject
 	[HideInInspector]
 	public CombatantStats Stats;
+
+	// The UI Canvas controller to display things on the screen, 
+	// like health bars and damage text.
 	[HideInInspector]
 	public ObjectUI ObjectUI;
 	[HideInInspector]
 	public bool IsDead = false;
 
-
+	// Each combatant has their own sprite layer for animations, 
+	// specified by AnimationLayerIndex.
 	public int AnimationLayerIndex = 0;
 	protected Animator anim;
-
+	
 	public List<Ability> Abilities;
 	public List<StatusEffect> StatusEffects;
 
@@ -27,10 +36,14 @@ public abstract class BattleCombatant : MonoBehaviour {
 		anim.SetLayerWeight(AnimationLayerIndex, 1.0f);
 	}
 
-	public virtual void Update() {
+	public virtual void Update() { 
 	}
 
+	/// <summary>
+	/// Reduce the Health Stat by the value.
+	/// </summary>
 	public void Damage(int value) {
+		// deal at least one damage when being damaged
 		if (value <= 0) {
 			value = 1;
 		}
@@ -40,7 +53,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 		ObjectUI.ShowDamageValue(value.ToString());
 		anim.SetTrigger("playStruck");
 
-		// check if the player is dead
+		// set dead condition if Health is zero
 		if (Stats.Health.IsCurrentZero()) {
 			IsDead = true;
 			StatusEffects.Clear();
@@ -48,6 +61,9 @@ public abstract class BattleCombatant : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Increase the Health stat by the value
+	/// </summary>
 	public void Heal(int value) {
 		if (value > 0) {
 			Stats.Health.Current += value;
@@ -57,7 +73,10 @@ public abstract class BattleCombatant : MonoBehaviour {
 
 		anim.SetTrigger("playHealing");
 	}
-
+	
+	/// <summary>
+	/// Use the ability on the target.
+	/// </summary>
 	protected void ExecuteAbility(Ability ability, BattleCombatant target) {
 		int dmg = 0;
 		
@@ -78,7 +97,7 @@ public abstract class BattleCombatant : MonoBehaviour {
 			break;
 			
 		case AbilityType.Ranged: 
-			dmg = ability.Power + Stats.Strength  - target.Stats.Defense;
+			dmg = ability.Power + Stats.Strength - target.Stats.Defense;
 			target.Damage(dmg);
 			break;
 		}
@@ -92,22 +111,16 @@ public abstract class BattleCombatant : MonoBehaviour {
 		}
 	}
 
-	protected void PlayAnimation(AbilityType type) {
-		switch (type) {
-		case AbilityType.Melee: PlayAttackAnim(); break;
-		case AbilityType.Magic: PlayMagicAnim(); break;
-		case AbilityType.Heal: PlayItemAnim(); break;
-		case AbilityType.Ranged: PlayAttackAnim(); break;
-		}
-	}
 
+	/// <summary>
+	/// Performs Damage over Turn (DoT) status effects on the player
+	/// </summary>
 	public void DoStatusEffects() {
 		int damage = 0;
 
+		// go through status effects and add damage if any.
 		for (int i = StatusEffects.Count-1; i >= 0; i--) {
-			if (StatusEffects[i].DamagePerTurn > 0) {
-				damage += StatusEffects[i].DamagePerTurn;
-			}
+			damage += StatusEffects[i].DamagePerTurn;
 
 			StatusEffects[i].Duration -= 1;
 
@@ -117,11 +130,15 @@ public abstract class BattleCombatant : MonoBehaviour {
 			}
 		}
 
+		// damage combatant if there is any
 		if (damage > 0) {
 			this.Damage(damage);
 		}
 	}
 
+	/// <summary>
+	/// Determines whether the player stunned by Status Effect.
+	/// </summary>
 	public bool IsStunned() {
 		foreach (StatusEffect status in StatusEffects) {
 			if (status.SkipsTurn) {
@@ -132,15 +149,29 @@ public abstract class BattleCombatant : MonoBehaviour {
 		return false;
 	}
 
+	/// <summary>
+	/// Determines whether the combatant is animating an action.
+	/// </summary>
 	public bool isAnimating() {
-		AnimatorStateInfo currentState = 
-			anim.GetCurrentAnimatorStateInfo(AnimationLayerIndex);
+		AnimatorStateInfo currentState = anim.GetCurrentAnimatorStateInfo(AnimationLayerIndex);
 		return !currentState.IsName("Idle") && 
 				!currentState.IsName("Dead") && 
 				!currentState.IsName("Victory");
 	}
 
-	protected void PlayAttackAnim() {
+	/// <summary>
+	/// Play a specific animation depending on AbilityType
+	/// </summary>
+	protected void PlayAnimation(AbilityType type) {
+		switch (type) {
+		case AbilityType.Melee: PlayAttackAnim(); break;
+		case AbilityType.Magic: PlayMagicAnim(); break;
+		case AbilityType.Heal: PlayItemAnim(); break;
+		case AbilityType.Ranged: PlayAttackAnim(); break;
+		}
+	}
+
+	private void PlayAttackAnim() {
 		int rng = Random.Range(0, 2);
 		if (rng == 0)
 			anim.SetTrigger("playAttack");
@@ -148,11 +179,11 @@ public abstract class BattleCombatant : MonoBehaviour {
 			anim.SetTrigger("playAttack2");
 	}
 
-	protected void PlayMagicAnim() {
+	private void PlayMagicAnim() {
 		anim.SetTrigger("playMagic");
 	}
 
-	protected void PlayItemAnim() {
+	private void PlayItemAnim() {
 		anim.SetTrigger("playItem");
 	}
 }

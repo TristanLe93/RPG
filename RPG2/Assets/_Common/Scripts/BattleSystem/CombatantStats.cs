@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Maintains the stats of combatants.
+/// </summary>
 public class CombatantStats : MonoBehaviour {
 	// statistics
 	public Stat Health;

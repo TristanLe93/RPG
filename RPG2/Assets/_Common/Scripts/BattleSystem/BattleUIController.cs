@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// The BattleUIController maintains the UI in the battle screen.
+/// </summary>
 public class BattleUIController : MonoBehaviour {
 	public UIStatusEffects StatusController;
 
@@ -30,7 +33,7 @@ public class BattleUIController : MonoBehaviour {
 
 	
 	void Start() {
-		Tooltip.transform.position = new Vector3(10000, 10000, 0);
+		HideTooltip();
 		DisableButtons();
 	}
 

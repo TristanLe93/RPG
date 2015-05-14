@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// EnemyCombatants use AI to determine what they do. 
+/// </summary>
 public abstract class EnemyCombatant : BattleCombatant {
 	protected BattleCombatant target;
 	protected Ability ability;
-
-
+	
 	public override void Start () {
 		base.Start();
 	}
@@ -16,6 +18,9 @@ public abstract class EnemyCombatant : BattleCombatant {
 		base.Start();
 	}
 
+	/// <summary>
+	/// The AI code to determine what ability to use in battle.
+	/// </summary>
 	public virtual IEnumerator BattleAI(BattleUIController ui, List<BattleCombatant> targetList) {
 		List<BattleCombatant> aliveTargets = targetList.Where(t => t.Stats.Health.Current > 0).ToList();
 		target = aliveTargets[Random.Range(0, aliveTargets.Count)];
@@ -30,6 +35,9 @@ public abstract class EnemyCombatant : BattleCombatant {
 		ui.UpdateStatusEffectsIcons(target.StatusEffects);
 	}
 
+	/// <summary>
+	/// Show the ability being used
+	/// </summary>
 	protected IEnumerator ShowAbility(BattleUIController ui) {
 		ui.ShowAbilityName(ability.Name);
 		yield return new WaitForSeconds(1.5f);

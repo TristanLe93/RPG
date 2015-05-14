@@ -2,6 +2,10 @@
 using UnityEngine.UI;
 using System.Collections;
 
+/// <summary>
+/// Combatant's UI shows information of who's turn it is, 
+/// damage and healing being applied, etc.
+/// </summary>
 public class ObjectUI : MonoBehaviour {
 	public Image HealthBar;
 	public Image TurnIcon;

@@ -3,10 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// The BattleController maintains the flow of combat.
+/// </summary>
 public class BattleController : MonoBehaviour {
+	// the controller of the UI
 	public BattleUIController UIController;
+
 	public List<BattleCombatant> Players;
 	public List<BattleCombatant> Enemies;
+
+	// The positions of each combatant should be
 	public List<Transform> PlayerPos;
 	public List<Transform> EnemyPos;
 
@@ -30,33 +37,43 @@ public class BattleController : MonoBehaviour {
 		StartCoroutine(UpdateState());
 	}
 
+	// Start the battle and maintain its states
 	private IEnumerator UpdateState() {
 		InitialiseBattle();
-		
+
 		while (battleActive) {
+			// reset all components before issuing a turn
 			UIController.ResetButtons();
 			currentCombatant = turnList[0];
 			selectedAbility = null;
 			selectedTarget = null;
 
+			// perform status effects on the current combatant's turn
 			bool combatantStunned = currentCombatant.IsStunned();
 			currentCombatant.DoStatusEffects();
 
+
 			if (currentCombatant.IsDead) {
 				EndTurn();
-			} else if (combatantStunned) {
+			} 
+			else if (combatantStunned) {
 				UIController.ShowAbilityName("Stunned!");
 				currentCombatant.ObjectUI.ShowTurnIcon();
 				yield return new WaitForSeconds(1.5f);
 				EndTurn();
-			} else if (currentCombatant is PlayerCombatant) {
+			} 
+			else if (currentCombatant is PlayerCombatant) {
 				yield return StartCoroutine(PlayerTurn());
-			} else {
+			} 
+			else {
 				yield return StartCoroutine(EnemyTurn());
 			}
 		}
 	}
 
+	/// <summary>
+	/// Set up all components in the battle engine.
+	/// </summary>
 	private void InitialiseBattle() {
 		// initialise Swap ability
 		swap = ScriptableObject.CreateInstance<Ability>();
@@ -68,7 +85,6 @@ public class BattleController : MonoBehaviour {
 		enemyRanks = Enemies;
 		turnList.AddRange(Players);
 		turnList.AddRange(Enemies);
-
 
 		// shuffle turnList
 		for (int i = 0; i < turnList.Count; i++) {
@@ -84,7 +100,10 @@ public class BattleController : MonoBehaviour {
 		UIController.UpdateHealthBar(lastSelectedPlayer.Stats.Health);
 		UIController.DisableButtons();
 	}
-	
+
+	/// <summary>
+	/// Start the player's turn.
+	/// </summary>
 	private IEnumerator PlayerTurn() {
 		PlayerCombatant player = (PlayerCombatant)currentCombatant;
 		lastSelectedPlayer = player;
@@ -115,6 +134,9 @@ public class BattleController : MonoBehaviour {
 		EndTurn();
 	}
 
+	/// <summary>
+	/// Start the enemies' turn
+	/// </summary>
 	private IEnumerator EnemyTurn() {
 		EnemyCombatant enemy = (EnemyCombatant)currentCombatant;
 		enemy.ObjectUI.ShowTurnIcon();
@@ -136,7 +158,6 @@ public class BattleController : MonoBehaviour {
 	/// Check if the either party is dead and award the winner.
 	/// </summary>
 	private void EndTurn() {
-		// if a party is victorious, play victory/game over
 		if (IsPartyDead(Players)) {
 			battleActive = false;
 			EnemyVictory();
@@ -158,9 +179,8 @@ public class BattleController : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Wait until an ability and target has been selected
+	/// Wait for the player to selected an ability and target.
 	/// </summary>
-	/// <returns>The ability and target.</returns>
 	private IEnumerator SelectAbilityAndTarget() {
 		while (!selectedAbility || !selectedTarget) {
 			if (Input.GetMouseButtonUp(0) && selectedAbility) {
@@ -187,9 +207,7 @@ public class BattleController : MonoBehaviour {
 		RaycastHit2D hit = Physics2D.Raycast(ray.origin, Vector2.zero);
 		
 		if (hit.collider) {
-			BattleCombatant target = 
-				hit.collider.gameObject.GetComponent<BattleCombatant>();
-
+			BattleCombatant target = hit.collider.gameObject.GetComponent<BattleCombatant>();
 			if (target) {
 				if (IsTargetValid(target)) {
 					return target;
@@ -200,20 +218,25 @@ public class BattleController : MonoBehaviour {
 		return null;
 	}
 
+	/// <summary>
+	/// Determines whether the target is valid for the selectedAbility.
+	/// </summary>
 	private bool IsTargetValid(BattleCombatant target) {
-		// targeting enemies
+		// if the target is an enemy
 		if (selectedAbility.TargetType == AbilityTarget.Enemies && Enemies.Contains(target)) {
 			int rank = enemyRanks.IndexOf(target);
 			int numDead = NumDeadInParty(Enemies);
 
-			// if back rank, then push the targetable further
+			// if the back rank is selectable, then the back rank is shifted
+			// on how many members are dead in the party.
 			if (numDead > 0 && selectedAbility.TargetableRanks[3]) {
 				List<bool> newTargetableList = new List<bool>(selectedAbility.TargetableRanks);
 	
+				// shift targetable combatants
 				while (numDead > 0) {
 					newTargetableList.RemoveAt(0);
 					newTargetableList.Add(true);
-					numDead -= 1;
+					numDead--;
 				}
 
 				return newTargetableList[rank] && !target.IsDead;
@@ -249,6 +272,9 @@ public class BattleController : MonoBehaviour {
 		return false;
 	}
 
+	/// <summary>
+	/// Determines whether the party is dead.
+	/// </summary>
 	private bool IsPartyDead(List<BattleCombatant> party) {
 		return party.Find((BattleCombatant b) => b.IsDead == false) == null;
 	}
@@ -273,6 +299,9 @@ public class BattleController : MonoBehaviour {
 		Players[targetRank].transform.position = currentPos;
 	}
 
+	/// <summary>
+	/// Shuffles dead members to the back of the party
+	/// </summary>
 	private void ShuffleDeadInParty(List<BattleCombatant> partyRanks, List<Transform> partyPos) {
 		List<BattleCombatant> deadBodies = new List<BattleCombatant>();
 
@@ -285,17 +314,20 @@ public class BattleController : MonoBehaviour {
 			}
 		}
 
-		// update player transform positions
+		// add dead bodies back to party
 		if (deadBodies.Count > 0) {
-			// add dead bodies back to party
 			partyRanks.AddRange(deadBodies);
 
+			// recalculate the positions of each member in party
 			for (int i = 0; i < partyRanks.Count; i++) {
 				partyRanks[i].transform.position = partyPos[i].position;
 			}
 		}
 	}
 
+	/// <summary>
+	/// Number of dead combatants in the party
+	/// </summary>
 	private int NumDeadInParty(List<BattleCombatant> party) {
 		int count = 0;
 		foreach (BattleCombatant combatant in party) {
@@ -305,9 +337,13 @@ public class BattleController : MonoBehaviour {
 		return count;
 	}
 
+	/// <summary>
+	/// Shows the available targets for the selected ability.
+	/// </summary>
 	private void ShowTargets() {
 		targetList.Clear();
 
+		// show enemy specific targets
 		if (selectedAbility.TargetType == AbilityTarget.Enemies) {
 			foreach (BattleCombatant enemy in Enemies) {
 				if (IsTargetValid(enemy)) {
@@ -316,6 +352,7 @@ public class BattleController : MonoBehaviour {
 				} 
 			}
 		} 
+		// show player specific targets
 		else if (selectedAbility.TargetType == AbilityTarget.Players) {
 			foreach (BattleCombatant player in Players) {
 				if (IsTargetValid(player)) {
@@ -329,28 +366,37 @@ public class BattleController : MonoBehaviour {
 			lastSelectedPlayer.ObjectUI.ShowTargetArrow();
 		}
 	}
-	
+
+	/// <summary>
+	/// Hides all available targets.
+	/// </summary>
 	private void HideTargets() {
-		foreach (BattleCombatant e in Enemies) {
-			e.ObjectUI.HideTargetArrow();
-		}
-		foreach (BattleCombatant p in Players) {
-			p.ObjectUI.HideTargetArrow();
+		foreach (BattleCombatant targets in targetList) {
+			targets.ObjectUI.HideTargetArrow();
 		}
 	}
 
+	/// <summary>
+	/// Do stuff when the player wins. eg. experience, loot, money
+	/// </summary>
 	private void PlayerVictory() {
 		foreach (BattleCombatant b in Players) {
 			PlayerCombatant p = (PlayerCombatant)b;
 			p.PlayVictoryAnim();
 		}
 	}
-	
+
+	/// <summary>
+	/// Game over when the player loses
+	/// </summary>
 	private void EnemyVictory() {
 		Debug.Log("GAMEOVER - YOU LOSE");
 		//TODO: YOU LOSE
 	}
-	
+
+	/// <summary>
+	/// A UIButton method to set an ability to use.
+	/// </summary>
 	public void Btn_SetAbility(int index) {
 		HideTargets();
 
@@ -362,6 +408,9 @@ public class BattleController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// A UIButton method to set 'Swap' as the selected ability.
+	/// </summary>
 	public void Btn_Swap() {
 		HideTargets();
 
